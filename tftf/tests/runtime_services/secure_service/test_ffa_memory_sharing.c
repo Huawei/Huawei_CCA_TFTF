@@ -70,12 +70,12 @@ static test_result_t test_memory_send_sp(uint32_t mem_func)
 	/***********************************************************************
 	 * Check if SPMC has ffa_version and expected FFA endpoints are deployed.
 	 **********************************************************************/
-	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
+	CHECK_SPMC_TESTING_SETUP(1, 1, expected_sp_uuids);
 
 	GET_TFTF_MAILBOX(mb);
 
 	struct ffa_memory_region_constituent constituents[] = {
-						{(void *)share_page, 1, 0}
+						{(void *)share_page, 1, 1}
 					};
 
 	const uint32_t constituents_count = sizeof(constituents) /
@@ -151,7 +151,7 @@ static test_result_t test_req_mem_send_sp_to_sp(uint32_t mem_func,
 	/***********************************************************************
 	 * Check if SPMC's ffa_version and presence of expected FF-A endpoints.
 	 **********************************************************************/
-	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
+	CHECK_SPMC_TESTING_SETUP(1, 1, expected_sp_uuids);
 
 	ret = cactus_req_mem_send_send_cmd(HYP_ID, sender_sp, mem_func,
 					   receiver_sp, non_secure);
@@ -183,7 +183,7 @@ static test_result_t test_req_mem_send_sp_to_vm(uint32_t mem_func,
 	/**********************************************************************
 	 * Check if SPMC's ffa_version and presence of expected FF-A endpoints.
 	 *********************************************************************/
-	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
+	CHECK_SPMC_TESTING_SETUP(1, 1, expected_sp_uuids);
 
 	ret = cactus_req_mem_send_send_cmd(HYP_ID, sender_sp, mem_func,
 					   receiver_vm, false);
@@ -255,7 +255,7 @@ test_result_t test_req_mem_lend_sp_to_vm(void)
 test_result_t test_mem_share_to_sp_clear_memory(void)
 {
 	struct ffa_memory_region_constituent constituents[] = {
-						{(void *)share_page, 1, 0}};
+						{(void *)share_page, 1, 1}};
 	const uint32_t constituents_count = sizeof(constituents) /
 			sizeof(struct ffa_memory_region_constituent);
 	struct mailbox_buffers mb;
@@ -268,7 +268,7 @@ test_result_t test_mem_share_to_sp_clear_memory(void)
 	/* Arbitrarily write 10 words after using shared memory. */
 	const uint32_t nr_words_to_write = 10U;
 
-	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
+	CHECK_SPMC_TESTING_SETUP(1, 1, expected_sp_uuids);
 
 	GET_TFTF_MAILBOX(mb);
 

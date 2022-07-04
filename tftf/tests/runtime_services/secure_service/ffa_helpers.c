@@ -155,17 +155,20 @@ static void ffa_memory_region_init_header(
 {
 	memory_region->sender = sender;
 	memory_region->attributes = attributes;
-	memory_region->reserved_0 = 0;
 	memory_region->flags = flags;
 	memory_region->handle = handle;
 	memory_region->tag = tag;
-	memory_region->reserved_1 = 0;
+	memory_region->memory_access_desc_size =
+		sizeof(struct ffa_memory_access);
 	memory_region->receiver_count = 1;
 	memory_region->receivers[0].receiver_permissions.receiver = receiver;
 	memory_region->receivers[0].receiver_permissions.permissions =
 		permissions;
 	memory_region->receivers[0].receiver_permissions.flags = 0;
 	memory_region->receivers[0].reserved_0 = 0;
+	/* Receivers at the end of the `ffa_memory_region` structure. */
+	memory_region->receivers_offset = sizeof(struct ffa_memory_region);
+	memset(memory_region->reserved, 0, sizeof(memory_region->reserved));
 }
 
 /**

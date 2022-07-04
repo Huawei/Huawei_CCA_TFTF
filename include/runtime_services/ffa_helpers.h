@@ -352,10 +352,10 @@ enum ffa_memory_shareability {
 typedef uint8_t ffa_memory_access_permissions_t;
 
 /**
- * This corresponds to table "Memory region attributes descriptor" of the FF-A
- * 1.0 specification.
+ * This corresponds to table 10.18 of the FF-A v1.1 EAC0 specification, "Memory
+ * region attributes descriptor".
  */
-typedef uint8_t ffa_memory_attributes_t;
+typedef uint16_t ffa_memory_attributes_t;
 
 #define FFA_DATA_ACCESS_OFFSET (0x0U)
 #define FFA_DATA_ACCESS_MASK ((0x3U) << FFA_DATA_ACCESS_OFFSET)
@@ -419,7 +419,8 @@ ATTR_FUNCTION_GET(memory_shareability, ffa_memory_attributes_t,
 
 /**
  * A set of contiguous pages which is part of a memory region. This corresponds
- * to table "Constituent memory region descriptor" of the FFA 1.0 specification.
+ * to table 10.14 of the FF-A v1.1 EAC0 specification, "Constituent memory
+ * region descriptor".
  */
 struct ffa_memory_region_constituent {
 	/**
@@ -434,8 +435,8 @@ struct ffa_memory_region_constituent {
 };
 
 /**
- * A set of pages comprising a memory region. This corresponds to table
- * "Composite memory region descriptor" of the FFA 1.0 specification.
+ * A set of pages comprising a memory region. This corresponds to table 10.13 of
+ * the FF-A v1.1 EAC0 specification, "Composite memory region descriptor".
  */
 struct ffa_composite_memory_region {
 	/**
@@ -520,9 +521,9 @@ struct ffa_memory_access {
 
 /**
  * Information about a set of pages which are being shared. This corresponds to
- * table "Lend, donate or share memory transaction descriptor" of the FFA
- * 1.0 specification. Note that it is also used for retrieve requests and
- * responses.
+ * table 10.20 of the FF-A v1.1 EAC0 specification, "Lend, donate or share
+ * memory transaction descriptor". Note that it is also used for retrieve
+ * requests and responses.
  */
 struct ffa_memory_region {
 	/**
@@ -531,8 +532,6 @@ struct ffa_memory_region {
 	 */
 	ffa_id_t sender;
 	ffa_memory_attributes_t attributes;
-	/** Reserved field, must be 0. */
-	uint8_t reserved_0;
 	/** Flags to control behaviour of the transaction. */
 	ffa_memory_region_flags_t flags;
 	ffa_memory_handle_t handle;
@@ -541,15 +540,22 @@ struct ffa_memory_region {
 	 * memory region.
 	 */
 	uint64_t tag;
-	/** Reserved field, must be 0. */
-	uint32_t reserved_1;
+	/** Size of the memory access descriptor. */
+	uint32_t memory_access_desc_size;
 	/**
 	 * The number of `ffa_memory_access` entries included in this
 	 * transaction.
 	 */
 	uint32_t receiver_count;
 	/**
-	 * An array of `attribute_count` endpoint memory access descriptors.
+	 * Offset of the 'receivers' field, which relates to the memory access
+	 * descriptors.
+	 */
+	uint32_t receivers_offset;
+	/** Reserved field (12 bytes) must be 0. */
+	uint32_t reserved[3];
+	/**
+	 * An array of `receiver_count` endpoint memory access descriptors.
 	 * Each one specifies a memory region offset, an endpoint and the
 	 * attributes with which this memory region should be mapped in that
 	 * endpoint's page table.
@@ -559,7 +565,8 @@ struct ffa_memory_region {
 
 /**
  * Descriptor used for FFA_MEM_RELINQUISH requests. This corresponds to table
- * "Descriptor to relinquish a memory region" of the FFA 1.0 specification.
+ * 16.25 of the FF-A v1.1 EAC0 specification, "Descriptor to relinquish a memory
+ * region".
  */
 struct ffa_mem_relinquish {
 	ffa_memory_handle_t handle;
