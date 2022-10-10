@@ -29,6 +29,8 @@
     <testcase name="AFP support" function="test_afp_support" />
     <testcase name="Test wfit instruction" function="test_wfit_instruction" />
     <testcase name="Test wfet instruction" function="test_wfet_instruction" />
+    <testcase name="PMUv3 cycle counter functional in NS" function="test_pmuv3_cycle_works_ns" />
+    <testcase name="PMUv3 event counter functional in NS" function="test_pmuv3_event_works_ns" />
   </testsuite>
 
   <testsuite name="ARM_ARCH_SVC" description="Arm Architecture Service tests">

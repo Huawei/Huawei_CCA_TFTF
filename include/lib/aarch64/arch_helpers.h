@@ -416,6 +416,34 @@ DEFINE_SYSREG_RW_FUNCS(pmccfiltr_el0)
 
 DEFINE_SYSREG_RW_FUNCS(pmevtyper0_el0)
 DEFINE_SYSREG_READ_FUNC(pmevcntr0_el0)
+DEFINE_SYSREG_RW_FUNCS(pmselr_el0)
+DEFINE_SYSREG_RW_FUNCS(pmxevtyper_el0)
+DEFINE_SYSREG_RW_FUNCS(pmxevcntr_el0)
+
+/* parameterised event counter accessors */
+static inline u_register_t read_pmevcntrn_el0(int ctr_num)
+{
+	write_pmselr_el0(ctr_num & PMSELR_EL0_SEL_MASK);
+	return read_pmxevcntr_el0();
+}
+
+static inline void write_pmevcntrn_el0(int ctr_num, u_register_t val)
+{
+	write_pmselr_el0(ctr_num & PMSELR_EL0_SEL_MASK);
+	write_pmxevcntr_el0(val);
+}
+
+static inline u_register_t read_pmevtypern_el0(int ctr_num)
+{
+	write_pmselr_el0(ctr_num & PMSELR_EL0_SEL_MASK);
+	return read_pmxevtyper_el0();
+}
+
+static inline void write_pmevtypern_el0(int ctr_num, u_register_t val)
+{
+	write_pmselr_el0(ctr_num & PMSELR_EL0_SEL_MASK);
+	write_pmxevtyper_el0(val);
+}
 
 /* Armv8.5 FEAT_RNG Registers */
 DEFINE_SYSREG_READ_FUNC(rndr)

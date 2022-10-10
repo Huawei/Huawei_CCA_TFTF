@@ -173,6 +173,11 @@
 #define ID_AA64DFR0_V8_2_DEBUG_ARCH_SUPPORTED	U(8)
 #define ID_AA64DFR0_V8_4_DEBUG_ARCH_SUPPORTED	U(9)
 
+/* ID_AA64DFR0_EL1.HPMN0 definitions */
+#define ID_AA64DFR0_HPMN0_SHIFT			U(60)
+#define ID_AA64DFR0_HPMN0_MASK			ULL(0xf)
+#define ID_AA64DFR0_HPMN0_SUPPORTED		ULL(1)
+
 /* ID_AA64DFR0_EL1.BRBE definitions */
 #define ID_AA64DFR0_BRBE_SHIFT			U(52)
 #define ID_AA64DFR0_BRBE_MASK			ULL(0xf)
@@ -187,6 +192,11 @@
 #define ID_AA64DFR0_TRACEFILT_SHIFT		U(40)
 #define ID_AA64DFR0_TRACEFILT_MASK		U(0xf)
 #define ID_AA64DFR0_TRACEFILT_SUPPORTED		U(1)
+
+/* ID_AA64DFR0_EL1.PMUVer definitions */
+#define ID_AA64DFR0_PMUVER_SHIFT		U(8)
+#define ID_AA64DFR0_PMUVER_MASK			ULL(0xf)
+#define ID_AA64DFR0_PMUVER_NOT_SUPPORTED	ULL(0)
 
 /* ID_AA64DFR0_EL1.TraceVer definitions */
 #define ID_AA64DFR0_TRACEVER_SHIFT		U(4)
@@ -416,6 +426,8 @@
 #define MDCR_EL2_HPME_BIT	(U(1) << 7)
 #define MDCR_EL2_TPM_BIT	(U(1) << 6)
 #define MDCR_EL2_TPMCR_BIT	(U(1) << 5)
+#define MDCR_EL2_HPMN_SHIFT	U(0)
+#define MDCR_EL2_HPMN_MASK	ULL(0x1f)
 #define MDCR_EL2_RESET_VAL	U(0x0)
 
 /* HSTR_EL2 definitions */
@@ -786,6 +798,8 @@
 #define PMCR_EL0_DP_BIT		(U(1) << 5)
 #define PMCR_EL0_X_BIT		(U(1) << 4)
 #define PMCR_EL0_D_BIT		(U(1) << 3)
+#define PMCR_EL0_C_BIT		(U(1) << 2)
+#define PMCR_EL0_P_BIT		(U(1) << 1)
 #define PMCR_EL0_E_BIT		(U(1) << 0)
 
 /* PMCNTENSET_EL0 definitions */
@@ -808,6 +822,10 @@
 #define PMCCFILTR_EL0_M_BIT		(U(1) << 26)
 #define PMCCFILTR_EL0_MT_BIT		(U(1) << 25)
 #define PMCCFILTR_EL0_SH_BIT		(U(1) << 24)
+
+/* PMSELR_EL0 definitions */
+#define PMSELR_EL0_SEL_SHIFT		U(0)
+#define PMSELR_EL0_SEL_MASK		U(0x1f)
 
 /* PMU event counter ID definitions */
 #define PMU_EV_PC_WRITE_RETIRED		U(0x000C)
