@@ -5,6 +5,7 @@
  */
 
 #include <arch_helpers.h>
+#include <arm_arch_svc.h>
 #include <test_helpers.h>
 
 /* tests target aarch64. Aarch32 is too different to even build */
@@ -12,6 +13,31 @@
 
 #define PMU_EVT_INST_RETIRED	0x0008
 #define NOP_REPETITIONS		50
+#define MAX_COUNTERS		32
+
+static inline void read_all_counters(u_register_t *array, int impl_ev_ctrs)
+{
+	array[0] = read_pmccntr_el0();
+	for (int i = 0; i < impl_ev_ctrs; i++) {
+		array[i + 1] = read_pmevcntrn_el0(i);
+	}
+}
+
+static inline void read_all_counter_configs(u_register_t *array, int impl_ev_ctrs)
+{
+	array[0] = read_pmccfiltr_el0();
+	for (int i = 0; i < impl_ev_ctrs; i++) {
+		array[i + 1] = read_pmevtypern_el0(i);
+	}
+}
+
+static inline void read_all_pmu_configs(u_register_t *array)
+{
+	array[0] = read_pmcntenset_el0();
+	array[1] = read_pmcr_el0();
+	array[2] = read_pmselr_el0();
+	array[3] = (IS_IN_EL2()) ? read_mdcr_el2() : 0;
+}
 
 static inline void enable_counting(void)
 {
@@ -56,6 +82,15 @@ static inline void execute_nops(void)
 	for (int i = 0; i < NOP_REPETITIONS; i++) {
 		__asm__ ("orr x0, x0, x0\n");
 	}
+}
+
+static inline void execute_el3_nop(void)
+{
+	/* ask EL3 for some info, no side effects */
+	smc_args args = { SMCCC_VERSION };
+
+	/* return values don't matter */
+	tftf_smc(&args);
 }
 
 #endif /* defined(__aarch64__) */
@@ -149,5 +184,64 @@ test_result_t test_pmuv3_event_works_ns(void)
 		return TEST_RESULT_SUCCESS;
 	}
 	return TEST_RESULT_FAIL;
+#endif /* defined(__aarch64__) */
+}
+
+
+/*
+ * check if entering/exiting EL3 (with a NOP) preserves all PMU registers.
+ */
+test_result_t test_pmuv3_el3_preserves(void)
+{
+	SKIP_TEST_IF_AARCH32();
+#if defined(__aarch64__)
+	u_register_t ctr_start[MAX_COUNTERS] = {0};
+	u_register_t ctr_cfg_start[MAX_COUNTERS] = {0};
+	u_register_t pmu_cfg_start[4];
+	u_register_t ctr_end[MAX_COUNTERS] = {0};
+	u_register_t ctr_cfg_end[MAX_COUNTERS] = {0};
+	u_register_t pmu_cfg_end[4];
+	int impl_ev_ctrs = (read_pmcr_el0() >> PMCR_EL0_N_SHIFT) & PMCR_EL0_N_MASK;
+
+	SKIP_TEST_IF_PMUV3_NOT_SUPPORTED();
+
+	/* start from 0 so we know we can't overflow */
+	clear_counters();
+	/* pretend counters have just been used */
+	enable_cycle_counter();
+	enable_event_counter(0);
+	enable_counting();
+	execute_nops();
+	disable_counting();
+
+	/* get before reading */
+	read_all_counters(ctr_start, impl_ev_ctrs);
+	read_all_counter_configs(ctr_cfg_start, impl_ev_ctrs);
+	read_all_pmu_configs(pmu_cfg_start);
+
+	/* give EL3 a chance to scramble everything */
+	execute_el3_nop();
+
+	/* get after reading */
+	read_all_counters(ctr_end, impl_ev_ctrs);
+	read_all_counter_configs(ctr_cfg_end, impl_ev_ctrs);
+	read_all_pmu_configs(pmu_cfg_end);
+
+	if (memcmp(ctr_start, ctr_end, sizeof(ctr_start)) != 0) {
+		tftf_testcase_printf("SMC call did not preserve counters\n");
+		return TEST_RESULT_FAIL;
+	}
+
+	if (memcmp(ctr_cfg_start, ctr_cfg_end, sizeof(ctr_cfg_start)) != 0) {
+		tftf_testcase_printf("SMC call did not preserve counter config\n");
+		return TEST_RESULT_FAIL;
+	}
+
+	if (memcmp(pmu_cfg_start, pmu_cfg_end, sizeof(pmu_cfg_start)) != 0) {
+		tftf_testcase_printf("SMC call did not preserve PMU registers\n");
+		return TEST_RESULT_FAIL;
+	}
+
+	return TEST_RESULT_SUCCESS;
 #endif /* defined(__aarch64__) */
 }
