@@ -4,6 +4,9 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
+# OS-initiated mode is not supported on AArch32 Juno.
+PSCI CPU Suspend in OSI mode
+
 # System suspend is not supported on AArch32 Juno.
 PSCI System Suspend Validation
 PSCI STAT/Stats test cases after system suspend

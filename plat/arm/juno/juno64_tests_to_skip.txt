@@ -6,3 +6,6 @@
 
 # The multicore spurious interrupt test is known to cause problems on Juno
 IRQ support in TSP/Multicore spurious interrupt test
+
+# OS-initiated mode is not supported on Juno
+PSCI CPU Suspend in OSI mode

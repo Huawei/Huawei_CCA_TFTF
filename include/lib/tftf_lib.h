@@ -47,6 +47,7 @@ int32_t tftf_psci_cpu_on(u_register_t target_cpu,
 			 uintptr_t entry_point_address,
 			 u_register_t context_id);
 int32_t tftf_psci_cpu_off(void);
+int32_t tftf_psci_set_suspend_mode(uint32_t mode);
 int32_t tftf_psci_affinity_info(u_register_t target_affinity,
 				uint32_t lowest_affinity_level);
 int32_t tftf_psci_node_hw_state(u_register_t target_cpu, uint32_t power_level);

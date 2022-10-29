@@ -86,6 +86,8 @@ typedef struct tftf_pwr_domain_node {
 	unsigned char is_present;
 } tftf_pwr_domain_node_t;
 
+extern tftf_pwr_domain_node_t tftf_pd_nodes[PLATFORM_NUM_AFFS];
+
 /*
  * Detect and store the platform topology so that test cases can query it later.
  */

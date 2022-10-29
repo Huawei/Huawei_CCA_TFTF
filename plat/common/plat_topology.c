@@ -184,10 +184,13 @@ static void get_parent_pwr_domain_nodes(unsigned int cpu_node,
 static void update_pwrlvl_limits(void)
 {
 	int cpu_id, j, is_present;
-	unsigned int nodes_idx[PLATFORM_MAX_AFFLVL] = {-1};
+	unsigned int nodes_idx[PLATFORM_MAX_AFFLVL];
 	unsigned int temp_index[PLATFORM_MAX_AFFLVL];
 
 	unsigned int cpu_node_offset = tftf_pwr_domain_start_idx[0];
+
+	for (j = 0; j < PLATFORM_MAX_AFFLVL; j++)
+		nodes_idx[j] = -1;
 
 	for (cpu_id = 0; cpu_id < PLATFORM_CORE_COUNT; cpu_id++) {
 		get_parent_pwr_domain_nodes(cpu_id + cpu_node_offset,
