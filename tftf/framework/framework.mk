@@ -27,7 +27,6 @@ TFTF_INCLUDES	:= 					\
 	-Iinclude/runtime_services/secure_el1_payloads	\
 	-Ispm/cactus					\
 	-Ispm/ivy					\
-	-Ispm/quark					\
 	-Irealm						\
 	-Ismc_fuzz/include
 

@@ -115,10 +115,9 @@ include fwu/ns_bl2u/ns_bl2u.mk
 # List of secure partitions present.
 SECURE_PARTITIONS	:=
 
-# Only platform fvp supports cactus_mm, quark
+# Only platform fvp supports cactus_mm
 ifeq (${ARCH}-${PLAT},aarch64-fvp)
 include spm/cactus_mm/cactus_mm.mk
-include spm/quark/quark.mk
 include realm/realm.mk
 endif
 
@@ -256,7 +255,6 @@ NS_BL2U_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 CACTUS_MM_CFLAGS	+= -mbranch-protection=${BP_OPTION}
 CACTUS_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 IVY_CFLAGS		+= -mbranch-protection=${BP_OPTION}
-QUARK_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 endif
 
 ifeq ($(SMC_FUZZING), 1)
@@ -300,12 +298,6 @@ IVY_INCLUDES		+= ${PLAT_INCLUDES}
 IVY_CFLAGS		+= ${COMMON_CFLAGS} -fpie
 IVY_ASFLAGS		+= ${COMMON_ASFLAGS}
 IVY_LDFLAGS		+= ${COMMON_LDFLAGS} $(PIE_LDFLAGS)
-
-QUARK_SOURCES		+= ${LIBC_SRCS}
-QUARK_INCLUDES		+= ${PLAT_INCLUDES}
-QUARK_CFLAGS		+= ${COMMON_CFLAGS}
-QUARK_ASFLAGS		+= ${COMMON_ASFLAGS}
-QUARK_LDFLAGS		+= ${COMMON_LDFLAGS}
 
 REALM_SOURCES		+= ${LIBC_SRCS}
 REALM_CFLAGS		+= ${COMMON_CFLAGS} -fpie
@@ -381,11 +373,6 @@ endif
 ifneq (${ARCH}-${PLAT},aarch64-fvp)
 .PHONY: cactus_mm
 cactus_mm:
-	@echo "ERROR: $@ is supported only on AArch64 FVP."
-	@exit 1
-
-.PHONY: quark
-quark:
 	@echo "ERROR: $@ is supported only on AArch64 FVP."
 	@exit 1
 
@@ -546,7 +533,6 @@ ifeq (${ARCH}-${PLAT},aarch64-fvp)
   $(eval $(call MAKE_IMG,cactus_mm))
   $(eval $(call MAKE_IMG,cactus))
   $(eval $(call MAKE_IMG,ivy))
-  $(eval $(call MAKE_IMG,quark))
   $(eval $(call MAKE_IMG,realm))
 endif
 
@@ -594,7 +580,7 @@ cscope:
 .SILENT: help
 help:
 	echo "usage: ${MAKE} PLAT=<${PLATFORMS}> \
-<all|tftf|ns_bl1u|ns_bl2u|cactus|ivy|quark|realm|pack_realm|el3_payload|distclean|clean|checkcodebase|checkpatch|help_tests>"
+<all|tftf|ns_bl1u|ns_bl2u|cactus|ivy|realm|pack_realm|el3_payload|distclean|clean|checkcodebase|checkpatch|help_tests>"
 	echo ""
 	echo "PLAT is used to specify which platform you wish to build."
 	echo "If no platform is specified, PLAT defaults to: ${DEFAULT_PLAT}"
@@ -605,12 +591,11 @@ help:
 	echo "  tftf           Build the TFTF image"
 	echo "  ns_bl1u        Build the NS_BL1U image"
 	echo "  ns_bl2u        Build the NS_BL2U image"
-	echo "  cactus         Build the Cactus image (Test S-EL0 payload) and resource description."
 	echo "  realm          Build the Realm image (Test R-EL1 payload)."
 	echo "  pack_realm     Pack the realm image to tftf.bin."
-	echo "  cactus_mm      Build the Cactus-MM image (Test S-EL0 payload)."
-	echo "  ivy            Build the Ivy image (Test S-EL0 payload) and resource description."
-	echo "  quark          Build the Quark image (Test S-EL0 payload) and resource description."
+	echo "  cactus         Build the Cactus image (FF-A S-EL1 test payload)."
+	echo "  cactus_mm      Build the Cactus-MM image (SPM-MM S-EL0 test payload)."
+	echo "  ivy            Build the Ivy image (FF-A S-EL0 test payload)."
 	echo "  el3_payload    Build the EL3 test payload"
 	echo "  checkcodebase  Check the coding style of the entire source tree"
 	echo "  checkpatch     Check the coding style on changes in the current"

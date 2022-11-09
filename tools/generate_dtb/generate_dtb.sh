@@ -44,7 +44,6 @@ cat "$ORIGINAL_DTS" > "$COMBINED_DTS"
 
 INCLUDES="-I spm/cactus
 	  -I spm/ivy
-	  -I spm/quark
 	  -I spm/include
 	  -I include/lib"
 
