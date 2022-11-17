@@ -198,4 +198,10 @@ static inline bool is_feat_rng_trap_present(void)
 			== ID_AA64PFR1_EL1_RNG_TRAP_SUPPORTED);
 }
 
+static inline unsigned int spe_get_version(void)
+{
+	return (unsigned int)((read_id_aa64dfr0_el1() >> ID_AA64DFR0_PMS_SHIFT) &
+		ID_AA64DFR0_PMS_MASK);
+}
+
 #endif /* ARCH_FEATURES_H */

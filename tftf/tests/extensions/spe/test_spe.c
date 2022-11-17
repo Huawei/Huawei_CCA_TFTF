@@ -6,39 +6,15 @@
 
 #include <test_helpers.h>
 
-#ifdef __aarch64__
-/*
- * Get SPE version value from id_aa64dfr0_el1.
- * Return values
- *   ID_AA64DFR0_SPE_NOT_SUPPORTED: not supported
- *   ID_AA64DFR0_SPE: FEAT_SPE supported (introduced in ARM v8.2)
- *   ID_AA64DFR0_SPE_V1P1: FEAT_SPEv1p1 supported (introduced in ARM v8.5)
- *   ID_AA64DFR0_SPE_V1P2: FEAT_SPEv1p2 supported (introduced in ARM v8.7)
- */
-
-typedef enum {
-	ID_AA64DFR0_SPE_NOT_SUPPORTED = 0,
-	ID_AA64DFR0_SPE,
-	ID_AA64DFR0_SPE_V1P1,
-	ID_AA64DFR0_SPE_V1P2
-} spe_ver_t;
-
-static spe_ver_t spe_get_version(void)
-{
-	return (spe_ver_t)((read_id_aa64dfr0_el1() >> ID_AA64DFR0_PMS_SHIFT) &
-		ID_AA64DFR0_PMS_MASK);
-}
-#endif /* __aarch64__ */
-
 test_result_t test_spe_support(void)
 {
 	/* SPE is an AArch64-only feature.*/
 	SKIP_TEST_IF_AARCH32();
 
 #ifdef __aarch64__
-	spe_ver_t spe_ver = spe_get_version();
+	unsigned int spe_ver = spe_get_version();
 
-	assert(spe_ver <= ID_AA64DFR0_SPE_V1P2);
+	assert(spe_ver <= ID_AA64DFR0_SPE_V1P4);
 
 	if (spe_ver == ID_AA64DFR0_SPE_NOT_SUPPORTED) {
 		return TEST_RESULT_SKIPPED;
