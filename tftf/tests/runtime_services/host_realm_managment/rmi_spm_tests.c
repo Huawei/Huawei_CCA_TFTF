@@ -360,6 +360,8 @@ test_result_t test_spm_rmm_serial_smc(void)
 	 **********************************************************************/
 	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
 
+	rmi_init_cmp_result();
+
 	/*
 	 * Randomize the initial state of the RMI granules to realm or non-secure
 	 */
@@ -388,16 +390,16 @@ test_result_t test_spm_rmm_serial_smc(void)
 		wait_for_core_to_turn_off(mpidr);
 	}
 
-	if (TEST_RESULT_SUCCESS != reset_buffer_del_spm_rmi()) {
+	if (reset_buffer_del_spm_rmi() != TEST_RESULT_SUCCESS) {
 		return TEST_RESULT_FAIL;
 	}
 
 	VERBOSE("Done exiting.\n");
 
 	/**********************************************************************
-	 * All tests passed.
+	 * Report register comparison result
 	 **********************************************************************/
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }
 
 /*
@@ -417,6 +419,8 @@ test_result_t test_spm_rmm_parallel_smc(void)
 	 * Check SPMC has ffa_version and expected FFA endpoints are deployed.
 	 **********************************************************************/
 	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
+
+	rmi_init_cmp_result();
 
 	/*
 	 * Randomize the initial state of the RMI granules to realm or non-secure
@@ -469,5 +473,12 @@ test_result_t test_spm_rmm_parallel_smc(void)
 
 	VERBOSE("Done exiting.\n");
 
-	return reset_buffer_del_spm_rmi();
+	if (reset_buffer_del_spm_rmi() != TEST_RESULT_SUCCESS) {
+		return TEST_RESULT_FAIL;
+	}
+
+	/**********************************************************************
+	 * Report register comparison result
+	 **********************************************************************/
+	return host_cmp_result();
 }

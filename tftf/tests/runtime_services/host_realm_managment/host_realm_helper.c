@@ -307,3 +307,14 @@ bool host_enter_realm_execute(uint8_t cmd)
 		test_result);
 	return false;
 }
+
+test_result_t host_cmp_result(void)
+{
+	if (rmi_get_cmp_result()) {
+		return TEST_RESULT_SUCCESS;
+	}
+
+	ERROR("RMI registers comparison failed\n");
+	return TEST_RESULT_FAIL;
+}
+

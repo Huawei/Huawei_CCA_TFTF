@@ -5,6 +5,7 @@
  *
  */
 
+#include <assert.h>
 #include <string.h>
 
 #include <debug.h>
@@ -16,76 +17,156 @@
 #include <realm_def.h>
 #include <tftf_lib.h>
 
+#define SET_ARG(_n) {			\
+	case _n:			\
+	regs[_n] = rand();		\
+	CONC(args->arg, _n) = regs[_n];	\
+	__attribute__((fallthrough));	\
+}
+
+#define	CHECK_RET(_n) {					\
+	if (CONC(ret_val.ret, _n) != regs[_n]) {	\
+		cmp_flag |= (1U << _n);			\
+	}						\
+}
+
+static bool rmi_cmp_result;
+
+static smc_ret_values rmi_handler(smc_args *args, unsigned int in_reg)
+{
+	u_register_t regs[8];
+	smc_ret_values ret_val;
+	unsigned int cmp_flag = 0U;
+
+	assert(args != NULL);
+	assert((in_reg >= 1U) && (in_reg <= 7U));
+
+	/* Function identifier */
+	regs[0] = (u_register_t)args->fid;
+
+	/* X4 and X5 can be passed as parameters */
+	regs[4] = args->arg4;
+	regs[5] = args->arg5;
+
+	/* SMC calls arguments in X1-X7 */
+	switch (in_reg) {
+		SET_ARG(1);
+		SET_ARG(2);
+		SET_ARG(3);
+		SET_ARG(4);
+		SET_ARG(5);
+		SET_ARG(6);
+	default:
+		regs[7] = rand();
+		args->arg7 = regs[7];
+	}
+
+	ret_val = tftf_smc(args);
+
+	/*
+	 * According to SMCCC v1.2 X4-X7 registers' values
+	 * must be preserved unless they contain result,
+	 * as specified in the function definition.
+	 */
+	if (regs[0] != RMI_RTT_READ_ENTRY) {
+		CHECK_RET(4);
+	}
+
+	CHECK_RET(5);
+	CHECK_RET(6);
+	CHECK_RET(7);
+
+	if (cmp_flag != 0U) {
+		rmi_cmp_result = false;
+
+		ERROR("RMI SMC 0x%lx corrupted registers: %s %s %s %s\n",
+			regs[0],
+			(((cmp_flag & (1U << 4)) != 0U) ? "X4" : ""),
+			(((cmp_flag & (1U << 5)) != 0U) ? "X5" : ""),
+			(((cmp_flag & (1U << 6)) != 0U) ? "X6" : ""),
+			(((cmp_flag & (1U << 7)) != 0U) ? "X7" : ""));
+	}
+
+	return ret_val;
+}
+
+void rmi_init_cmp_result(void)
+{
+	rmi_cmp_result = true;
+}
+
+bool rmi_get_cmp_result(void)
+{
+	return rmi_cmp_result;
+}
+
 static inline u_register_t rmi_data_create(bool unknown, u_register_t data,
 		u_register_t rd, u_register_t map_addr, u_register_t src)
 {
 	if (unknown) {
-		return ((smc_ret_values)(tftf_smc(&(smc_args)
-				{RMI_DATA_CREATE_UNKNOWN, data, rd, map_addr,
-			0UL, 0UL, 0UL, 0UL}))).ret0;
+		return rmi_handler(&(smc_args){RMI_DATA_CREATE_UNKNOWN,
+					data, rd, map_addr}, 4U).ret0;
 	} else {
-		return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_DATA_CREATE,
-			data, rd, map_addr, src, 0UL, 0UL, 0UL}))).ret0;
+		return rmi_handler(&(smc_args){RMI_DATA_CREATE,
+				/* X5 = flags */
+				data, rd, map_addr, src, 0UL}, 6U).ret0;
 	}
 }
 
 static inline u_register_t rmi_realm_activate(u_register_t rd)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REALM_ACTIVATE,
-		rd, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_REALM_ACTIVATE, rd}, 2U).ret0;
 }
 
 u_register_t rmi_realm_create(u_register_t rd, u_register_t params_ptr)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REALM_CREATE,
-		rd, params_ptr, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_REALM_CREATE,
+				rd, params_ptr}, 3U).ret0;
 }
 
 u_register_t rmi_realm_destroy(u_register_t rd)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REALM_DESTROY,
-		rd, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_REALM_DESTROY, rd}, 2U).ret0;
 }
 
 static inline u_register_t rmi_data_destroy(u_register_t rd,
 		u_register_t map_addr)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_DATA_DESTROY,
-		rd, map_addr, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_DATA_DESTROY, rd, map_addr},
+					3U).ret0;
 }
 
 static inline u_register_t rmi_rec_create(u_register_t rec, u_register_t rd,
 	u_register_t params_ptr)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REC_CREATE,
-			rec, rd, params_ptr, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_REC_CREATE, rec, rd, params_ptr},
+					4U).ret0;
 }
 
 static inline u_register_t rmi_rec_destroy(u_register_t rec)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REC_DESTROY,
-		rec, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_REC_DESTROY, rec}, 2U).ret0;
 }
 
 static inline u_register_t rmi_rtt_create(u_register_t rtt, u_register_t rd,
 	u_register_t map_addr, u_register_t level)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_CREATE,
-			rtt, rd, map_addr, level, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_CREATE,
+					rtt, rd, map_addr, level}, 5U).ret0;
 }
 
 static inline u_register_t rmi_rtt_destroy(u_register_t rtt, u_register_t rd,
 	u_register_t map_addr, u_register_t level)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_DESTROY,
-		rtt, rd, map_addr, level, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_DESTROY,
+					rtt, rd, map_addr, level}, 5U).ret0;
 }
 
 u_register_t rmi_features(u_register_t index, u_register_t *features)
 {
 	smc_ret_values rets;
 
-	rets = tftf_smc(&(smc_args) {RMI_FEATURES, index, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL});
+	rets = rmi_handler(&(smc_args){RMI_FEATURES, index}, 2U);
 	*features = rets.ret1;
 	return rets.ret0;
 }
@@ -94,15 +175,15 @@ static inline u_register_t rmi_rtt_init_ripas(u_register_t rd,
 	u_register_t map_addr,
 	u_register_t level)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_INIT_RIPAS,
-		rd, map_addr, level, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_INIT_RIPAS,
+					rd, map_addr, level}, 4U).ret0;
 }
 
 static inline u_register_t rmi_rtt_fold(u_register_t rtt, u_register_t rd,
 	u_register_t map_addr, u_register_t level)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_FOLD,
-		rtt, rd, map_addr, level, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_FOLD,
+					rtt, rd, map_addr, level}, 5U).ret0;
 }
 
 static inline u_register_t rmi_rec_aux_count(u_register_t rd,
@@ -110,7 +191,7 @@ static inline u_register_t rmi_rec_aux_count(u_register_t rd,
 {
 	smc_ret_values rets;
 
-	rets = tftf_smc(&(smc_args) {RMI_REC_AUX_COUNT, rd, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL});
+	rets = rmi_handler(&(smc_args){RMI_REC_AUX_COUNT, rd}, 2U);
 	*aux_count = rets.ret1;
 	return rets.ret0;
 }
@@ -119,16 +200,16 @@ static inline u_register_t rmi_rtt_set_ripas(u_register_t rd, u_register_t rec,
 	u_register_t map_addr, u_register_t level,
 	u_register_t ripas)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_SET_RIPAS,
-			rd, rec, map_addr, level, ripas, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_SET_RIPAS,
+				rd, rec, map_addr, level, ripas}, 6U).ret0;
 }
 
 static inline u_register_t rmi_rtt_mapunprotected(u_register_t rd,
 	u_register_t map_addr,
 	u_register_t level, u_register_t ns_pa)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_MAP_UNPROTECTED,
-		rd, map_addr, level, ns_pa, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_MAP_UNPROTECTED,
+					rd, map_addr, level, ns_pa}, 5U).ret0;
 }
 
 static u_register_t rmi_rtt_readentry(u_register_t rd, u_register_t map_addr,
@@ -136,9 +217,8 @@ static u_register_t rmi_rtt_readentry(u_register_t rd, u_register_t map_addr,
 {
 	smc_ret_values rets;
 
-	rets = tftf_smc(&(smc_args) {RMI_RTT_READ_ENTRY,
-		rd, map_addr, level, 0UL, 0UL, 0UL, 0UL});
-
+	rets = rmi_handler(&(smc_args){RMI_RTT_READ_ENTRY,
+					rd, map_addr, level}, 4U);
 	rtt->walk_level = rets.ret1;
 	rtt->state = rets.ret2 & 0xFF;
 	rtt->out_addr = rets.ret3;
@@ -149,8 +229,8 @@ static inline u_register_t rmi_rtt_unmap_unprotected(u_register_t rd,
 	u_register_t map_addr,
 	u_register_t level, u_register_t ns_pa)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_RTT_UNMAP_UNPROTECTED,
-		rd, map_addr, level, ns_pa, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_RTT_UNMAP_UNPROTECTED,
+					rd, map_addr, level, ns_pa}, 5U).ret0;
 }
 
 static inline u_register_t rtt_level_mapsize(u_register_t level)
@@ -537,20 +617,17 @@ static u_register_t realm_tear_down_rtt_range(struct realm *realm,
 
 u_register_t rmi_granule_delegate(u_register_t addr)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_GRANULE_DELEGATE,
-			addr, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_GRANULE_DELEGATE, addr}, 2U).ret0;
 }
 
 u_register_t rmi_granule_undelegate(u_register_t addr)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_GRANULE_UNDELEGATE,
-			addr, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_GRANULE_UNDELEGATE, addr}, 2U).ret0;
 }
 
 u_register_t rmi_version(void)
 {
-	return ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_VERSION,
-			0UL, 0UL, 0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+	return rmi_handler(&(smc_args){RMI_VERSION}, 1U).ret0;
 }
 
 u_register_t realm_create(struct realm *realm)
@@ -998,7 +1075,7 @@ undo_from_new_state:
 
 
 u_register_t realm_rec_enter(struct realm *realm, u_register_t *exit_reason,
-		unsigned int *test_result)
+			     unsigned int *test_result)
 {
 	struct rmi_rec_run *run = (struct rmi_rec_run *)realm->run;
 	u_register_t ret;
@@ -1006,9 +1083,8 @@ u_register_t realm_rec_enter(struct realm *realm, u_register_t *exit_reason,
 
 	do {
 		re_enter_rec = false;
-		ret = ((smc_ret_values)(tftf_smc(&(smc_args) {RMI_REC_ENTER,
-				realm->rec, realm->run,
-				0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
+		ret = rmi_handler(&(smc_args){RMI_REC_ENTER,
+					realm->rec, realm->run}, 3U).ret0;
 		VERBOSE("rmi_rec_enter, \
 				run->exit_reason=0x%lx, \
 				run->exit.esr=0x%llx, \

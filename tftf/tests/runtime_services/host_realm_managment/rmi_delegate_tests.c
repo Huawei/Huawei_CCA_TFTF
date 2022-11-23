@@ -47,6 +47,8 @@ test_result_t init_buffer_del(void)
 {
 	u_register_t retrmm;
 
+	rmi_init_cmp_result();
+
 	for (uint32_t i = 0; i < (NUM_GRANULES * PLATFORM_CORE_COUNT) ; i++) {
 		if ((rand() % 2) == 0) {
 			retrmm = rmi_granule_delegate(
@@ -61,7 +63,8 @@ test_result_t init_buffer_del(void)
 			bufferstate[i] = B_UNDELEGATED;
 		}
 	}
-	return TEST_RESULT_SUCCESS;
+
+	return host_cmp_result();
 }
 
 /*
@@ -75,13 +78,15 @@ test_result_t realm_version_single_cpu(void)
 		return TEST_RESULT_SKIPPED;
 	}
 
+	rmi_init_cmp_result();
+
 	retrmm = rmi_version();
 
 	tftf_testcase_printf("RMM version is: %lu.%lu\n",
 			RMI_ABI_VERSION_GET_MAJOR(retrmm),
 			RMI_ABI_VERSION_GET_MINOR(retrmm));
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }
 
 /*
@@ -96,6 +101,8 @@ test_result_t realm_version_multi_cpu(void)
 	if (get_armv9_2_feat_rme_support() == 0U) {
 		return TEST_RESULT_SKIPPED;
 	}
+
+	rmi_init_cmp_result();
 
 	lead_mpid = read_mpidr_el1() & MPID_MASK;
 
@@ -146,6 +153,8 @@ test_result_t realm_delegate_undelegate(void)
 		return TEST_RESULT_SKIPPED;
 	}
 
+	rmi_init_cmp_result();
+
 	retrmm = rmi_granule_delegate((u_register_t)bufferdelegate);
 	if (retrmm != 0UL) {
 		tftf_testcase_printf("Delegate operation returns fail, %lx\n", retrmm);
@@ -159,18 +168,22 @@ test_result_t realm_delegate_undelegate(void)
 	tftf_testcase_printf("Delegate and undelegate of buffer 0x%lx succeeded\n",
 			(uintptr_t)bufferdelegate);
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }
 
 static test_result_t realm_multi_cpu_payload_test(void)
 {
-	u_register_t retrmm = rmi_version();
+	u_register_t retrmm;
+
+	rmi_init_cmp_result();
+
+	retrmm = rmi_version();
 
 	tftf_testcase_printf("Multi CPU RMM version on CPU %llx is: %lu.%lu\n",
 			(long long)read_mpidr_el1() & MPID_MASK, RMI_ABI_VERSION_GET_MAJOR(retrmm),
 			RMI_ABI_VERSION_GET_MINOR(retrmm));
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }
 
 /*
@@ -189,6 +202,8 @@ test_result_t realm_delundel_multi_cpu(void)
 	}
 
 	lead_mpid = read_mpidr_el1() & MPID_MASK;
+
+	rmi_init_cmp_result();
 
 	if (init_buffer_del() == TEST_RESULT_FAIL) {
 		return TEST_RESULT_FAIL;
@@ -228,7 +243,6 @@ test_result_t realm_delundel_multi_cpu(void)
 	/*
 	 * Cleanup to set all granules back to undelegated
 	 */
-
 	for (uint32_t i = 0; i < (NUM_GRANULES * PLATFORM_CORE_COUNT) ; i++) {
 		if (bufferstate[i] == B_DELEGATED) {
 			retrmm = rmi_granule_undelegate(
@@ -242,8 +256,7 @@ test_result_t realm_delundel_multi_cpu(void)
 		}
 	}
 
-	ret = TEST_RESULT_SUCCESS;
-	return ret;
+	return host_cmp_result();
 }
 
 /*
@@ -260,6 +273,8 @@ static test_result_t realm_multi_cpu_payload_del_undel(void)
 
 	cpu_node = platform_get_core_pos(read_mpidr_el1() & MPID_MASK);
 
+	rmi_init_cmp_result();
+
 	for (uint32_t i = 0; i < NUM_GRANULES; i++) {
 		if (bufferstate[((cpu_node * NUM_GRANULES) + i)] == B_UNDELEGATED) {
 			retrmm = rmi_granule_delegate((u_register_t)
@@ -275,14 +290,15 @@ static test_result_t realm_multi_cpu_payload_del_undel(void)
 			return TEST_RESULT_FAIL;
 		}
 	}
-	return TEST_RESULT_SUCCESS;
+
+	return host_cmp_result();
 }
 
-/*Fail testing of delegation process. The first is an error expected
+/*
+ * Fail testing of delegation process. The first is an error expected
  * for processing the same granule twice and the second is submission of
  * a misaligned address
  */
-
 test_result_t realm_fail_del(void)
 {
 	if (get_armv9_2_feat_rme_support() == 0U) {
@@ -290,6 +306,8 @@ test_result_t realm_fail_del(void)
 	}
 
 	u_register_t retrmm;
+
+	rmi_init_cmp_result();
 
 	retrmm = rmi_granule_delegate((u_register_t)&bufferdelegate[0]);
 
@@ -323,5 +341,5 @@ test_result_t realm_fail_del(void)
 		return TEST_RESULT_FAIL;
 	}
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }

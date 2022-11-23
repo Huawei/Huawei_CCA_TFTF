@@ -140,6 +140,8 @@ test_result_t rl_memory_cannot_be_accessed_in_ns(void)
 		goto out_unregister;
 	}
 
+	rmi_init_cmp_result();
+
 	/* Delegate the shared page to Realm. */
 	retmm = rmi_granule_delegate((u_register_t)&share_page);
 	if (retmm != 0UL) {
@@ -155,7 +157,7 @@ test_result_t rl_memory_cannot_be_accessed_in_ns(void)
 		goto out_undelegate;
 	}
 
-	result = TEST_RESULT_SUCCESS;
+	result = host_cmp_result();
 
 out_undelegate:
 	/* Undelegate the shared page. */
@@ -231,6 +233,8 @@ static test_result_t memory_cannot_be_accessed_in_rl(u_register_t params)
 		return TEST_RESULT_SKIPPED;
 	}
 
+	rmi_init_cmp_result();
+
 	retrmm = rmi_version();
 
 	VERBOSE("RMM version is: %lu.%lu\n",
@@ -273,7 +277,7 @@ static test_result_t memory_cannot_be_accessed_in_rl(u_register_t params)
 		return TEST_RESULT_FAIL;
 	}
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }
 
 /**

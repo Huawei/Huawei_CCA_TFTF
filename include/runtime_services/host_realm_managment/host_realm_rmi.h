@@ -502,6 +502,8 @@ u_register_t realm_init_ipa_state(struct realm *realm,
 		u_register_t  level,
 		u_register_t  start,
 		uint64_t  end);
-
+test_result_t realm_cmp_result(void);
+void rmi_init_cmp_result(void);
+bool rmi_get_cmp_result(void);
 
 #endif /* HOST_REALM_RMI_H */
