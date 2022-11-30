@@ -133,21 +133,21 @@ struct ffa_boot_info_header {
 #define FFA_FEATURE_MEI 0x3U
 
 /** Partition property: partition supports receipt of direct requests. */
-#define FFA_PARTITION_DIRECT_REQ_RECV 0x1
+#define FFA_PARTITION_DIRECT_REQ_RECV (UINT32_C(1) << 0)
 
 /** Partition property: partition can send direct requests. */
-#define FFA_PARTITION_DIRECT_REQ_SEND 0x2
+#define FFA_PARTITION_DIRECT_REQ_SEND (UINT32_C(1) << 1)
 
 /** Partition property: partition can send and receive indirect messages. */
-#define FFA_PARTITION_INDIRECT_MSG 0x4
+#define FFA_PARTITION_INDIRECT_MSG (UINT32_C(1) << 2)
 
 /** Partition property: partition can receive notifications. */
-#define FFA_PARTITION_NOTIFICATION 0x8
+#define FFA_PARTITION_NOTIFICATION (UINT32_C(1) << 3)
 
-/**
- * Partition info descriptor as defined in Table 13.34 of the v1.1 BETA0
- * FF-A Specification
- */
+/** Partition property: partition runs in the AArch64 execution state. */
+#define FFA_PARTITION_AARCH64_EXEC (UINT32_C(1) << 8)
+
+/** Partition info descriptor as defined in FF-A v1.1 EAC0 Table 13.37 */
 struct ffa_partition_info {
 	/** The ID of the VM the information is about */
 	ffa_id_t id;
@@ -160,8 +160,15 @@ struct ffa_partition_info {
 };
 
 /**
+ * Bits[31:3] of partition properties must be zero for FF-A v1.0.
+ * This corresponds to table 8.25 "Partition information descriptor"
+ * in DEN0077A FF-A 1.0 REL specification.
+ */
+#define FFA_PARTITION_v1_0_RES_MASK (~(UINT32_C(0x7)))
+
+/**
  * Partition info descriptor as defined in Table 8.25 of the v1.0
- * FF-A Specification
+ * FF-A Specification (DEN0077A).
  */
 struct ffa_partition_info_v1_0 {
 	/** The ID of the VM the information is about */

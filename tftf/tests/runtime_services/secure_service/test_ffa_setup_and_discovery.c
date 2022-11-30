@@ -27,7 +27,8 @@ static const struct ffa_partition_info ffa_expected_partition_info[] = {
 	{
 		.id = SP_ID(1),
 		.exec_context = PRIMARY_EXEC_CTX_COUNT,
-		.properties = FFA_PARTITION_DIRECT_REQ_RECV |
+		.properties = FFA_PARTITION_AARCH64_EXEC |
+			      FFA_PARTITION_DIRECT_REQ_RECV |
 			      FFA_PARTITION_NOTIFICATION,
 		.uuid = sp_uuids[0]
 	},
@@ -35,7 +36,8 @@ static const struct ffa_partition_info ffa_expected_partition_info[] = {
 	{
 		.id = SP_ID(2),
 		.exec_context = SECONDARY_EXEC_CTX_COUNT,
-		.properties = FFA_PARTITION_DIRECT_REQ_RECV |
+		.properties = FFA_PARTITION_AARCH64_EXEC |
+			      FFA_PARTITION_DIRECT_REQ_RECV |
 			      FFA_PARTITION_NOTIFICATION,
 		.uuid = sp_uuids[1]
 	},
@@ -43,7 +45,8 @@ static const struct ffa_partition_info ffa_expected_partition_info[] = {
 	{
 		.id = SP_ID(3),
 		.exec_context = TERTIARY_EXEC_CTX_COUNT,
-		.properties = FFA_PARTITION_DIRECT_REQ_RECV |
+		.properties = FFA_PARTITION_AARCH64_EXEC |
+			      FFA_PARTITION_DIRECT_REQ_RECV |
 			      FFA_PARTITION_NOTIFICATION,
 		.uuid = sp_uuids[2]
 	},
@@ -51,7 +54,8 @@ static const struct ffa_partition_info ffa_expected_partition_info[] = {
 	{
 		.id = SP_ID(4),
 		.exec_context = IVY_EXEC_CTX_COUNT,
-		.properties = FFA_PARTITION_DIRECT_REQ_RECV,
+		.properties = FFA_PARTITION_AARCH64_EXEC |
+			      FFA_PARTITION_DIRECT_REQ_RECV,
 		.uuid = sp_uuids[3]
 	}
 };
@@ -399,6 +403,10 @@ test_result_t test_ffa_partition_info_v1_0(void)
 			(const struct ffa_partition_info_v1_0 *)(mb.recv);
 
 		for (unsigned int i = 0U; i < expected_size; i++) {
+			uint32_t expected_properties_v1_0 =
+				ffa_expected_partition_info[i].properties &
+				~FFA_PARTITION_v1_0_RES_MASK;
+
 			if (info[i].id != ffa_expected_partition_info[i].id) {
 				ERROR("Wrong ID. Expected %x, got %x\n",
 				      ffa_expected_partition_info[i].id,
@@ -413,9 +421,9 @@ test_result_t test_ffa_partition_info_v1_0(void)
 				result = TEST_RESULT_FAIL;
 			}
 			if (info[i].properties !=
-			    ffa_expected_partition_info[i].properties) {
+			    expected_properties_v1_0) {
 				ERROR("Wrong properties. Expected %d, got %d\n",
-				      ffa_expected_partition_info[i].properties,
+				      expected_properties_v1_0,
 				      info[i].properties);
 				result = TEST_RESULT_FAIL;
 			}
