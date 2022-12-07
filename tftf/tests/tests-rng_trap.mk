@@ -4,6 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-TESTS_SOURCES	+=	$(addprefix tftf/tests/,			\
-	extensions/rng_trap/test_rndr_trap.c				\
+TESTS_SOURCES	+=	$(addprefix tftf/tests/,		\
+	extensions/rng_trap/test_rng_trap.c			\
 )
