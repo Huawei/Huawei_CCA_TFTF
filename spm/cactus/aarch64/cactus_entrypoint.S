@@ -20,22 +20,33 @@ stacks_end:
 func cactus_entrypoint
 	/* Entry reason is primary EC cold boot */
 	mov	x19, #1
+
+	/* Fall-through. */
+
 secondary_cold_entry:
+	/*
+	 * Entry reason is secondary EC cold boot (or primary EC cold
+	 * boot from above).
+	 */
+
 	/*
 	 * x0 holds a pointer to the Boot Information Blob.
 	 * Save it for later usage.
 	 */
 	mov	x20, x0
 
-	/* Get the vMPIDR. The SPMC passes the vCPU linear id in lower bits. */
+	/* The SPMC passes the vCPU id in vMPIDR low bits. */
 	mrs	x0, mpidr_el1
 	bic	x0, x0, #0x80000000
 
-	/* Entry reason is secondary EC cold boot */
-	mrs	x0, mpidr_el1
-	bl	platform_get_core_pos
+	/*
+	 * To maintain legacy, the SPMC passes the physical core id through x4.
+	 * For a MP SP check the physical core id matches the vCPU id.
+	 */
+	cmp	x4, x0
+	bne	.
 
-	/* Setup the stack pointer. */
+	/* Setup the stack pointer (from the linear id stored in x0). */
 	adr	x1, stacks_end
 	mov	x2, #SP_STACKS_SIZE
 	mul	x2, x0, x2
