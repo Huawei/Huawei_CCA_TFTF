@@ -26,6 +26,8 @@ test_result_t test_realm_create_enter(void)
 		return TEST_RESULT_SKIPPED;
 	}
 
+	rmi_init_cmp_result();
+
 	retrmm = rmi_version();
 	VERBOSE("RMM version is: %lu.%lu\n",
 			RMI_ABI_VERSION_GET_MAJOR(retrmm),
@@ -59,5 +61,6 @@ test_result_t test_realm_create_enter(void)
 		ret1, ret2);
 		return TEST_RESULT_FAIL;
 	}
-	return TEST_RESULT_SUCCESS;
+
+	return host_cmp_result();
 }

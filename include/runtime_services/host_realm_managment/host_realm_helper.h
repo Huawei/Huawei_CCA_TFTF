@@ -18,5 +18,7 @@ bool host_create_shared_mem(
 bool host_destroy_realm(void);
 bool host_enter_realm_execute(uint8_t cmd);
 
+test_result_t host_cmp_result(void);
+
 #endif /* HOST_REALM_HELPER_H */
 

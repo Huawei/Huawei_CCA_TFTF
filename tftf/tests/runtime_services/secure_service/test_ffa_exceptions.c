@@ -70,6 +70,8 @@ test_result_t rl_memory_cannot_be_accessed_in_s(void)
 	VERBOSE("TFTF - Handle: %llx Address: %p\n",
 		handle, constituents[0].address);
 
+	rmi_init_cmp_result();
+
 	/* Delegate the shared page to Realm. */
 	retmm = rmi_granule_delegate((u_register_t)&share_page);
 	if (retmm != 0UL) {
@@ -103,5 +105,5 @@ test_result_t rl_memory_cannot_be_accessed_in_s(void)
 		return TEST_RESULT_FAIL;
 	}
 
-	return TEST_RESULT_SUCCESS;
+	return host_cmp_result();
 }

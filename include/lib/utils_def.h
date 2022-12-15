@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2016-2022, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -177,5 +177,8 @@
 		member;			\
 		unsigned char reserved##end[end - start]; \
 	}
+
+#define CONCAT(x, y)	x##y
+#define CONC(x, y)	CONCAT(x, y)
 
 #endif /* UTILS_DEF_H */
