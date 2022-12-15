@@ -1010,11 +1010,11 @@ u_register_t realm_rec_enter(struct realm *realm, u_register_t *exit_reason,
 				realm->rec, realm->run,
 				0UL, 0UL, 0UL, 0UL, 0UL}))).ret0;
 		VERBOSE("rmi_rec_enter, \
-				run->exit_reason=0x%lx, \
-				run->exit.esr=0x%llx, \
+				run->exit.exit_reason=0x%lx, \
+				run->exit.esr=0x%lx, \
 				EC_BITS=%d, \
-				ISS_DFSC_MASK=0x%llx\n",
-				run->exit_reason,
+				ISS_DFSC_MASK=0x%lx\n",
+				run->exit.exit_reason,
 				run->exit.esr,
 				((EC_BITS(run->exit.esr) == EC_DABORT_CUR_EL)),
 				(ISS_BITS(run->exit.esr) & ISS_DFSC_MASK));
