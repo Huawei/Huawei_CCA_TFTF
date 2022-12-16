@@ -227,6 +227,7 @@ test_result_t s_memory_cannot_be_accessed_in_ns(void)
 static test_result_t memory_cannot_be_accessed_in_rl(u_register_t params)
 {
 	u_register_t retrmm;
+	test_result_t result = TEST_RESULT_FAIL;
 	static char rd[GRANULE_SIZE] __aligned(GRANULE_SIZE);
 
 	if (get_armv9_2_feat_rme_support() == 0U) {
@@ -262,13 +263,12 @@ static test_result_t memory_cannot_be_accessed_in_rl(u_register_t params)
 		retrmm = rmi_realm_destroy((u_register_t)&rd[0]);
 		if (retrmm != 0UL) {
 			ERROR("Realm destroy operation returns fail, %lx\n", retrmm);
-			return TEST_RESULT_FAIL;
 		}
-		return TEST_RESULT_FAIL;
-	} else if (retrmm != RMM_STATUS_ERROR_INPUT) {
-		ERROR("Realm create operation should fail with code:%ld retrmm:%ld\n",
-		RMM_STATUS_ERROR_INPUT, retrmm);
-		return TEST_RESULT_FAIL;
+	} else if (retrmm != RMI_ERROR_INPUT) {
+		ERROR("Realm create operation should fail with code:%d retrmm:%ld\n",
+			RMI_ERROR_INPUT, retrmm);
+	} else {
+		result = TEST_RESULT_SUCCESS;
 	}
 
 	retrmm = rmi_granule_undelegate((u_register_t)&rd[0]);
@@ -277,7 +277,11 @@ static test_result_t memory_cannot_be_accessed_in_rl(u_register_t params)
 		return TEST_RESULT_FAIL;
 	}
 
-	return host_cmp_result();
+	if (result == TEST_RESULT_SUCCESS) {
+		return host_cmp_result();
+	}
+
+	return TEST_RESULT_FAIL;
 }
 
 /**
@@ -309,9 +313,9 @@ test_result_t rt_memory_cannot_be_accessed_in_s(void)
 		return TEST_RESULT_SKIPPED;
 	}
 
-	INIT_TFTF_MAILBOX(mb);
-
 	CHECK_SPMC_TESTING_SETUP(1, 1, expected_sp_uuids);
+
+	INIT_TFTF_MAILBOX(mb);
 
 	GET_TFTF_MAILBOX(mb);
 
