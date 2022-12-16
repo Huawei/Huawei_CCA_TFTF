@@ -320,13 +320,6 @@ typedef enum {
 #define REC_GIC_NUM_LRS			16U
 
 /*
- * The error code 0x201 is the packed version of the
- * rmm error {RMM_STATUS_ERROR_INPUT,2U}
- * happened when Granule(params_ptr).pas != NS
- */
-#define RMM_STATUS_ERROR_INPUT		0x201UL
-
-/*
  * The Realm attribute parameters are shared by the Host via
  * RMI_REALM_CREATE::params_ptr. The values can be observed or modified
  * either by the Host or by the Realm.
