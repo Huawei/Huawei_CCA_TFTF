@@ -27,4 +27,5 @@ TESTS_SOURCES	+=							\
 TESTS_SOURCES	+=							\
 	$(addprefix tftf/tests/runtime_services/host_realm_managment/,	\
 		host_realm_rmi.c					\
+		host_realm_helper.c					\
 	)
