@@ -255,6 +255,7 @@ NS_BL2U_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 CACTUS_MM_CFLAGS	+= -mbranch-protection=${BP_OPTION}
 CACTUS_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 IVY_CFLAGS		+= -mbranch-protection=${BP_OPTION}
+REALM_CFLAGS		+= -mbranch-protection=${BP_OPTION}
 endif
 
 ifeq ($(SMC_FUZZING), 1)
