@@ -36,7 +36,8 @@
 	       function="test_ffa_rxtx_unmap_fail" />
      <testcase name="FF-A RXTX remap unmapped region success"
 	     function="test_ffa_rxtx_map_unmapped_success" />
-
+     <testcase name="FF-A RXTX unmap SP rxtx buffer"
+	     function="test_ffa_rxtx_unmap_fail_if_sp" />
      <testcase name="Test FFA_SPM_ID_GET"
                function="test_ffa_spm_id_get" />
 
