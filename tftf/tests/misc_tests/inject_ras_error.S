@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,8 +10,8 @@
 
 
 #ifdef __aarch64__
-	.globl	inject_serror
-	.globl	inject_uncontainable
+	.globl	inject_unrecoverable_ras_error
+	.globl	inject_uncontainable_ras_error
 	.globl	serror_sdei_event_handler
 
 /*
@@ -23,7 +23,7 @@
  * x2: Type of error to be generated
  * x3: Memory location to wait for, or 0 if no waiting is required
  */
-func inject_serror_record
+func inject_ras_error_record
 	/* Clear SError received flag if necessary */
 	cbz	x3, 1f
 	str	xzr, [x3, #0]
@@ -59,13 +59,13 @@ func inject_serror_record
 
 3:
 	ret
-endfunc inject_serror_record
+endfunc inject_ras_error_record
 
 /*
  * Inject Unrecoverable error through fault record 0. Wait until serror_received
  * is set by the SDEI handler in response to receving the event.
  */
-func inject_serror
+func inject_unrecoverable_ras_error
 	/* Inject fault into record 0 */
 	mov	x0, #0
 
@@ -80,14 +80,14 @@ func inject_serror
 	adrp	x3, serror_received
 	add	x3, x3, :lo12:serror_received
 
-	b	inject_serror_record
-endfunc inject_serror
+	b	inject_ras_error_record
+endfunc inject_unrecoverable_ras_error
 
 /*
  * Inject Uncontainable error through fault record 0. This function doesn't wait
  * as the handling is terminal in EL3.
  */
-func inject_uncontainable
+func inject_uncontainable_ras_error
 	/* Inject fault into record 0 */
 	mov	x0, #0
 
@@ -99,8 +99,8 @@ func inject_uncontainable
 	/* Nothing to wait for */
 	mov	x3, xzr
 
-	b	inject_serror_record
-endfunc inject_uncontainable
+	b	inject_ras_error_record
+endfunc inject_uncontainable_ras_error
 
 /*
  * SDEI event handler for SErrors.
