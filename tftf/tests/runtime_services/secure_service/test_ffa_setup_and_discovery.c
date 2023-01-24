@@ -291,17 +291,17 @@ test_result_t test_ffa_rxtx_unmap_fail(void)
 
 /**
  * Test mapping RXTX buffers that have been previously unmapped from NWd.
- * This test also sets the Mailbox for other SPM related tests that need to use
- * RXTX buffers.
  */
 test_result_t test_ffa_rxtx_map_unmapped_success(void)
 {
 	test_result_t ret =  test_ffa_rxtx_map(FFA_SUCCESS_SMC32);
-
-	if (ret == TEST_RESULT_SUCCESS) {
-		VERBOSE("Set RXTX Mailbox for remaining spm tests.\n");
-		set_tftf_mailbox(&mb);
-	}
+	/*
+	 * Unmapping buffers such that further tests can map and use RXTX
+	 * buffers.
+	 * Subsequent attempts to map the RXTX buffers will fail, if this is
+	 * invoked at this point.
+	 */
+	ffa_rxtx_unmap();
 	return ret;
 }
 

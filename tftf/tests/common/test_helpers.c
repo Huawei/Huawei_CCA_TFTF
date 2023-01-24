@@ -132,20 +132,32 @@ test_result_t map_test_unmap(const map_args_unmap_t *args,
 	return test_ret;
 }
 
-void set_tftf_mailbox(const struct mailbox_buffers *mb)
+bool reset_tftf_mailbox(void)
 {
-	if (mb != NULL) {
-		test_mb = *mb;
+	if (is_ffa_call_error(ffa_rxtx_unmap())) {
+		return false;
 	}
+
+	test_mb.send = NULL;
+	test_mb.recv = NULL;
+
+	return true;
 }
 
 bool get_tftf_mailbox(struct mailbox_buffers *mb)
 {
-	if ((test_mb.recv != NULL) && (test_mb.send != NULL)) {
-		*mb = test_mb;
-		return true;
+	struct ffa_value ret;
+
+	if (test_mb.recv == NULL || test_mb.send == NULL) {
+		CONFIGURE_AND_MAP_MAILBOX(test_mb, PAGE_SIZE, ret);
+		if (is_ffa_call_error(ret)) {
+			return false;
+		}
 	}
-	return false;
+
+	*mb = test_mb;
+
+	return true;
 }
 
 test_result_t check_spmc_testing_set_up(
@@ -231,24 +243,6 @@ bool spm_core_sp_init(ffa_id_t sp_id)
 		}
 	}
 
-	return true;
-}
-
-/*
- * Initializes the Mailbox for other SPM related tests that need to use
- * RXTX buffers.
- */
-bool mailbox_init(struct mailbox_buffers mb)
-{
-	struct ffa_value ret;
-
-	ffa_rxtx_unmap();
-	CONFIGURE_AND_MAP_MAILBOX(mb, PAGE_SIZE, ret);
-	if (ffa_func_id(ret) != FFA_SUCCESS_SMC32) {
-		ERROR("Failed to map RXTX buffers %x!\n", ffa_error_code(ret));
-		return false;
-	}
-	set_tftf_mailbox(&mb);
 	return true;
 }
 
