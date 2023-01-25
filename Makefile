@@ -107,6 +107,9 @@ include tftf/framework/framework.mk
 include tftf/tests/tests.mk
 include fwu/ns_bl1u/ns_bl1u.mk
 include fwu/ns_bl2u/ns_bl2u.mk
+include realm/testbin/testbin.mk
+include realm/serialp/serialp.mk
+include realm/psci/psci.mk
 
 # Only platform fvp supports cactus_mm, quark
 ifeq (${ARCH}-${PLAT},aarch64-fvp)
@@ -298,6 +301,22 @@ QUARK_INCLUDES		+= ${PLAT_INCLUDES}
 QUARK_CFLAGS		+= ${COMMON_CFLAGS}
 QUARK_ASFLAGS		+= ${COMMON_ASFLAGS}
 QUARK_LDFLAGS		+= ${COMMON_LDFLAGS}
+
+REALM_TESTBIN_INCLUDES		+= ${PLAT_INCLUDES}
+REALM_TESTBIN_CFLAGS		+= ${COMMON_CFLAGS}
+REALM_TESTBIN_ASFLAGS		+= ${COMMON_ASFLAGS}
+REALM_TESTBIN_LDFLAGS		+= ${COMMON_LDFLAGS}
+
+REALM_SERIALP_SOURCES		+= ${LIBC_SRCS}
+REALM_SERIALP_INCLUDES		+= ${PLAT_INCLUDES}
+REALM_SERIALP_CFLAGS		+= ${COMMON_CFLAGS}
+REALM_SERIALP_ASFLAGS		+= ${COMMON_ASFLAGS}
+REALM_SERIALP_LDFLAGS		+= ${COMMON_LDFLAGS}
+
+REALM_PSCI_INCLUDES		+= ${PLAT_INCLUDES}
+REALM_PSCI_CFLAGS		+= ${COMMON_CFLAGS}
+REALM_PSCI_ASFLAGS		+= ${COMMON_ASFLAGS}
+REALM_PSCI_LDFLAGS		+= ${COMMON_LDFLAGS}
 
 .PHONY: locate-checkpatch
 locate-checkpatch:
@@ -510,6 +529,13 @@ endif
 
 $(eval $(call MAKE_IMG,tftf))
 
+ifeq (${ARCH},aarch64)
+  $(eval $(call MAKE_IMG,realm_testbin))
+  $(eval $(call MAKE_IMG,realm_serialp))
+  $(eval $(call MAKE_IMG,realm_psci))
+tftfr: realm_testbin realm_serialp realm_psci
+endif
+
 ifeq ($(FIRMWARE_UPDATE), 1)
   $(eval $(call MAKE_IMG,ns_bl1u))
   $(eval $(call MAKE_IMG,ns_bl2u))
@@ -537,6 +563,14 @@ el3_payload: $(BUILD_DIR)
 
 all: el3_payload
 endif
+
+tftfr: tftf
+	@echo "  BUILD TFTFR"
+	@scripts/make_tftfr.sh build/${PLAT}/${BUILD_TYPE}/tftfr.bin \
+		build/${PLAT}/${BUILD_TYPE}/tftf.bin \
+		build/${PLAT}/${BUILD_TYPE}/realm_testbin.bin \
+		build/${PLAT}/${BUILD_TYPE}/realm_serialp.bin \
+		build/${PLAT}/${BUILD_TYPE}/realm_psci.bin
 
 doc:
 	@echo "  BUILD DOCUMENTATION"

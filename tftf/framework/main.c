@@ -24,6 +24,7 @@
 #include <tftf.h>
 #include <tftf_lib.h>
 #include <timer.h>
+#include <runtime_services/realm_payload/realm_payload_test.h>
 
 /* version information for TFTF */
 extern const char version_string[];
@@ -545,7 +546,7 @@ void __dead2 tftf_cold_boot_main(void)
 	tftf_init_topology();
 
 	tftf_irq_setup();
-
+#ifndef PLAT_qemu
 	rc = tftf_initialise_timer();
 	if (rc != 0) {
 		ERROR("Failed to initialize the timer subsystem (%d).\n", rc);
@@ -555,7 +556,7 @@ void __dead2 tftf_cold_boot_main(void)
 	/* Enable the SGI used by the timer management framework */
 	tftf_irq_enable(IRQ_WAKE_SGI, GIC_HIGHEST_NS_PRIORITY);
 	enable_irq();
-
+#endif
 	if (new_test_session()) {
 		NOTICE("Starting a new test session\n");
 		status = tftf_init_nvm();

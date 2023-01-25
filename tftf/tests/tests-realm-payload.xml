@@ -15,6 +15,18 @@
 	  <testcase name="Multi CPU Realm payload Delegate and Undelegate" function="realm_delundel_multi_cpu" />
 	  <testcase name="Testing delegation fails" function="realm_fail_del" />
 	  <testcase name="Realm testing with SPM tests" function="test_ffa_secondary_core_direct_realm_msg" />
+	  <testcase name="Create and destroy realm" function="realm_create_destroy" />
+	  <testcase name="Create and destroy RTT" function="rtt_create_destroy" />
+	  <testcase name="Map and unmap unprotected" function="rtt_map_unmap_ns" />
+	  <testcase name="Create and read RTT" function="rtt_read" />
+	  <testcase name="Data create and destroy" function="data_create_destroy" />
+	  <testcase name="2M Data create and destroy" function="data_create_destroy_level" />
+	  <testcase name="REC create and destroy" function="rec_create_destroy" />
+	  <testcase name="REC enter" function="rec_enter" />
+	  <testcase name="REC enter second CPU" function="rec_enter_second_cpu" />
+	  <testcase name="testbin Realm" function="test_testbin" />
+	  <testcase name="serialp Realm" function="test_serialp" />
+	  <testcase name="PSCI test Realm" function="test_psci" />
   </testsuite>
 
 </testsuites>

@@ -5,6 +5,7 @@ cscope.*
 *.patch
 .project
 .cproject
+.vscode
 
 # Ctags
 tags

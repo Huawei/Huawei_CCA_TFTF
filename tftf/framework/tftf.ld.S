@@ -48,6 +48,14 @@ SECTIONS
         __DATA_END__ = .;
     } >RAM
 
+    realm_text (NOLOAD) : ALIGN(PAGE_SIZE) {
+        __REALM_TEXT_START__ = .;
+        /* testbin 1 + serialp 2 + psci 1 + = 4 pages.
+         * realm_text can be larger or equal to actual image size. */
+        . += (8 * 0x1000);
+        __REALM_TEXT_END__ = .;
+    } >RAM
+
     stacks (NOLOAD) : {
         __STACKS_START__ = .;
         *(tftf_normal_stacks)
