@@ -238,17 +238,7 @@ typedef test_result_t (*test_function_arg_t)(void *arg);
 #define GET_TFTF_MAILBOX(mb)							\
 	do {									\
 		if (!get_tftf_mailbox(&mb)) {					\
-			ERROR("Mailbox not configured!\nThis test relies on"	\
-			" test suite \"FF-A RXTX Mapping\" to map/configure"	\
-			" RXTX buffers\n");					\
-			return TEST_RESULT_FAIL;				\
-		}								\
-	} while (false);
-
-#define INIT_TFTF_MAILBOX(mb)							\
-	do {									\
-		if (!mailbox_init(mb)) {					\
-			ERROR("Mailbox not configured properly!\n");		\
+			ERROR("Mailbox RXTX buffers not configured!\n");	\
 			return TEST_RESULT_FAIL;				\
 		}								\
 	} while (false);
@@ -402,17 +392,18 @@ test_result_t map_test_unmap(const map_args_unmap_t *args,
 			     test_function_arg_t test);
 
 /*
- * Helper function to set TFTF global mailbox for SPM related tests.
- * This function should be invoked by the first TFTF test that requires
- * RX and/or TX buffers.
+ * Helper function to reset TFTF global mailbox for SPM related tests.
+ * It calls the FFA_RXTX_UNMAP interface, for the SPMC to drop the current
+ * address.
  */
-void set_tftf_mailbox(const struct mailbox_buffers *mb);
+bool reset_tftf_mailbox(void);
 
 /*
  * Helper function to get TFTF global mailbox for SPM related tests.
- * This function should be called by all tests that require access to RX or TX
- * buffers, after the function 'set_tftf_mailbox' has been used by the first
- * test to rely on RX and TX buffers.
+ * Allocates RX/TX buffer pair and calls FFA_RXTX_MAP interface, for the SPMC
+ * to map them into its own S1 translation.
+ * If this function is called, and the buffers had been priorly mapped, it
+ * sets 'mb' with the respective addresses.
  */
 bool get_tftf_mailbox(struct mailbox_buffers *mb);
 
