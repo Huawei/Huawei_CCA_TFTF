@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,7 +13,7 @@
 
 uint64_t serror_received;
 
-extern void inject_serror(void);
+extern void inject_unrecoverable_ras_error(void);
 
 int serror_handler(int ev, uint64_t arg)
 {
@@ -51,7 +51,7 @@ test_result_t test_single_fault(void)
 		return TEST_RESULT_FAIL;
 	}
 
-	inject_serror();
+	inject_unrecoverable_ras_error();
 
 	return TEST_RESULT_SUCCESS;
 }
