@@ -43,7 +43,7 @@ Still to come
 
 --------------
 
-*Copyright (c) 2019-2020, Arm Limited. All rights reserved.*
+*Copyright (c) 2019-2023, Arm Limited. All rights reserved.*
 
 .. _SMC Calling Convention: https://developer.arm.com/docs/den0028/latest
 .. _Power State Coordination Interface (PSCI): PSCI_
@@ -56,4 +56,5 @@ Still to come
 .. _TSP: https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git/tree/bl32/tsp
 .. _Firmware update: https://trustedfirmware-a.readthedocs.io/en/latest/components/firmware-update.html
 .. _EL3 payload boot flow: https://trustedfirmware-a.readthedocs.io/en/latest/design/alt-boot-flows.html#el3-payloads-alternative-boot-flow
+.. _True Random Number Generator Firmware Interface (TRNG_FW): TRNG_FW_
 .. _TRNG_FW: https://developer.arm.com/documentation/den0098/latest
