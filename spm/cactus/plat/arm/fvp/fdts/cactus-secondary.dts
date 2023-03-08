@@ -61,12 +61,5 @@
 			base-address = <0x00000000 0x7501000>;
 			attributes = <0x3>; /* read-write */
 		};
-
-		/* Without optional base-address */
-		test-memory {
-			description = "test-memory";
-			pages-count = <4>;
-			attributes = <0x3>; /* read-write */
-		};
 	};
 };

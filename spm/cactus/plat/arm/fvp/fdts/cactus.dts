@@ -71,13 +71,6 @@
 			attributes = <0x3>; /* read-write */
 		};
 
-		/* Without optional base-address */
-		test-memory {
-			description = "test-memory";
-			pages-count = <4>;
-			attributes = <0x3>; /* read-write */
-		};
-
 		/*
 		 * Scratch memory used for the purpose of testing SMMUv3 driver
 		 * through Cactus SP

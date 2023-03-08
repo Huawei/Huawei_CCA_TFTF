@@ -35,13 +35,6 @@
 	memory-regions {
 		compatible = "arm,ffa-manifest-memory-regions";
 
-		/* Without optional base-address */
-		test-memory {
-			description = "test-memory";
-			pages-count = <4>;
-			attributes = <0x3>; /* read-write */
-		};
-
 		/* Memory to be shared in memory sharing tests. */
 		share-memory {
 			description = "share-memory";
