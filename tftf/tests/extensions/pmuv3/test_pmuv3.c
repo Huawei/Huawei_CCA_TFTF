@@ -201,9 +201,11 @@ test_result_t test_pmuv3_el3_preserves(void)
 	u_register_t ctr_end[MAX_COUNTERS] = {0};
 	u_register_t ctr_cfg_end[MAX_COUNTERS] = {0};
 	u_register_t pmu_cfg_end[4];
-	int impl_ev_ctrs = (read_pmcr_el0() >> PMCR_EL0_N_SHIFT) & PMCR_EL0_N_MASK;
+	int impl_ev_ctrs;
 
 	SKIP_TEST_IF_PMUV3_NOT_SUPPORTED();
+
+	impl_ev_ctrs = (read_pmcr_el0() >> PMCR_EL0_N_SHIFT) & PMCR_EL0_N_MASK;
 
 	/* start from 0 so we know we can't overflow */
 	clear_counters();
