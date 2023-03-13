@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021-2022, Arm Limited. All rights reserved.
+# Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -14,6 +14,7 @@ TESTS_SOURCES	+=							\
 
 TESTS_SOURCES	+=							\
 	$(addprefix tftf/tests/runtime_services/host_realm_managment/,	\
+		host_pmuv3.c						\
 		host_realm_rmi.c					\
 		host_realm_helper.c					\
 		host_shared_data.c					\

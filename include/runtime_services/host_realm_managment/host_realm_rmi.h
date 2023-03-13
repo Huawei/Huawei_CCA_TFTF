@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -9,8 +9,8 @@
 #define HOST_REALM_RMI_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
-#include <realm_rsi.h>
 #include <smccc.h>
 #include <utils_def.h>
 
@@ -426,7 +426,13 @@ struct rmi_rec_exit {
 		unsigned char ripas_value;			/* 0x510 */
 	}, 0x500, 0x600);
 	/* Host call immediate value */
-	SET_MEMBER(unsigned int imm, 0x600, 0x800);		/* 0x600 */
+	SET_MEMBER(unsigned int imm, 0x600, 0x700);		/* 0x600 */
+	/* PMU overflow */
+	SET_MEMBER(unsigned long pmu_ovf, 0x700, 0x708);	/* 0x700 */
+	/* PMU interrupt enable */
+	SET_MEMBER(unsigned long pmu_intr_en, 0x708, 0x710);	/* 0x708 */
+	/* PMU counter enable */
+	SET_MEMBER(unsigned long pmu_cntr_en, 0x710, 0x800);	/* 0x710 */
 };
 
 /*
@@ -469,34 +475,28 @@ struct realm {
 };
 
 /* RMI/SMC */
-u_register_t rmi_version(void);
-u_register_t rmi_granule_delegate(u_register_t addr);
-u_register_t rmi_granule_undelegate(u_register_t addr);
-u_register_t rmi_realm_create(u_register_t rd, u_register_t params_ptr);
-u_register_t rmi_realm_destroy(u_register_t rd);
-u_register_t rmi_features(u_register_t index, u_register_t *features);
+u_register_t host_rmi_version(void);
+u_register_t host_rmi_granule_delegate(u_register_t addr);
+u_register_t host_rmi_granule_undelegate(u_register_t addr);
+u_register_t host_rmi_realm_create(u_register_t rd, u_register_t params_ptr);
+u_register_t host_rmi_realm_destroy(u_register_t rd);
+u_register_t host_rmi_features(u_register_t index, u_register_t *features);
 
 /* Realm management */
-u_register_t realm_map_protected_data_unknown(struct realm *realm,
-		u_register_t target_pa,
-		u_register_t map_size);
-u_register_t realm_create(struct realm *realm);
-u_register_t realm_map_payload_image(struct realm *realm,
-		u_register_t realm_payload_adr);
-u_register_t realm_map_ns_shared(struct realm *realm,
-		u_register_t ns_shared_mem_adr,
-		u_register_t ns_shared_mem_size);
-u_register_t realm_rec_create(struct realm *realm);
-u_register_t realm_activate(struct realm *realm);
-u_register_t realm_destroy(struct realm *realm);
-u_register_t realm_rec_enter(struct realm *realm, u_register_t *exit_reason,
-		unsigned int *test_result);
-u_register_t realm_init_ipa_state(struct realm *realm,
-		u_register_t  level,
-		u_register_t  start,
-		uint64_t  end);
-test_result_t realm_cmp_result(void);
-void rmi_init_cmp_result(void);
-bool rmi_get_cmp_result(void);
+u_register_t host_realm_create(struct realm *realm);
+u_register_t host_realm_map_payload_image(struct realm *realm,
+					  u_register_t realm_payload_adr);
+u_register_t host_realm_map_ns_shared(struct realm *realm,
+					u_register_t ns_shared_mem_adr,
+					u_register_t ns_shared_mem_size);
+u_register_t host_realm_rec_create(struct realm *realm);
+u_register_t host_realm_activate(struct realm *realm);
+u_register_t host_realm_destroy(struct realm *realm);
+u_register_t host_realm_rec_enter(struct realm *realm, u_register_t *exit_reason,
+		unsigned int *host_call_result);
+u_register_t host_realm_init_ipa_state(struct realm *realm, u_register_t level,
+					u_register_t start, uint64_t end);
+void host_rmi_init_cmp_result(void);
+bool host_rmi_get_cmp_result(void);
 
 #endif /* HOST_REALM_RMI_H */

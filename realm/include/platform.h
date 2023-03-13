@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
  */
 
-#ifndef REALM_PLATFORM_H
-#define REALM_PLATFORM_H
+#ifndef PLATFORM_H
+#define PLATFORM_H
 
 /*
  * Helper that returns a linear core ID from a MPID
@@ -17,4 +17,4 @@ unsigned int platform_get_core_pos(u_register_t mpid)
 	return 0U;
 }
 
-#endif /* REALM_PLATFORM_H */
+#endif /* PLATFORM_H */

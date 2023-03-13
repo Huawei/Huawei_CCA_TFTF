@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -12,17 +12,18 @@
 #include <host_shared_data.h>
 #include "realm_def.h"
 #include <realm_rsi.h>
+#include <realm_tests.h>
 #include <tftf_lib.h>
 
 /*
- * This function reads sleep time in ms from shared buffer and spins PE in a loop
- * for that time period.
+ * This function reads sleep time in ms from shared buffer and spins PE
+ * in a loop for that time period.
  */
 static void realm_sleep_cmd(void)
 {
 	uint64_t sleep = realm_shared_data_get_host_val(HOST_SLEEP_INDEX);
 
-	INFO("REALM_PAYLOAD: Realm payload going to sleep for %llums\n", sleep);
+	realm_printf("Realm: going to sleep for %llums\n", sleep);
 	waitms(sleep);
 }
 
@@ -35,11 +36,11 @@ static void realm_get_rsi_version(void)
 
 	version = rsi_get_version();
 	if (version == (u_register_t)SMC_UNKNOWN) {
-		ERROR("SMC_RSI_ABI_VERSION failed (%ld)", (long)version);
+		realm_printf("SMC_RSI_ABI_VERSION failed (%ld)", (long)version);
 		return;
 	}
 
-	INFO("RSI ABI version %u.%u (expected: %u.%u)",
+	realm_printf("RSI ABI version %u.%u (expected: %u.%u)",
 	RSI_ABI_VERSION_GET_MAJOR(version),
 	RSI_ABI_VERSION_GET_MINOR(version),
 	RSI_ABI_VERSION_GET_MAJOR(RSI_ABI_VERSION),
@@ -56,12 +57,13 @@ static void realm_get_rsi_version(void)
  */
 void realm_payload_main(void)
 {
-	uint8_t cmd = 0U;
 	bool test_succeed = false;
 
 	realm_set_shared_structure((host_shared_data_t *)rsi_get_ns_buffer());
+
 	if (realm_get_shared_structure() != NULL) {
-		cmd = realm_shared_data_get_realm_cmd();
+		uint8_t cmd = realm_shared_data_get_realm_cmd();
+
 		switch (cmd) {
 		case REALM_SLEEP_CMD:
 			realm_sleep_cmd();
@@ -71,8 +73,20 @@ void realm_payload_main(void)
 			realm_get_rsi_version();
 			test_succeed = true;
 			break;
+		case REALM_PMU_CYCLE:
+			test_succeed = test_pmuv3_cycle_works_realm();
+			break;
+		case REALM_PMU_EVENT:
+			test_succeed = test_pmuv3_event_works_realm();
+			break;
+		case REALM_PMU_PRESERVE:
+			test_succeed = test_pmuv3_rmm_preserves();
+			break;
+		case REALM_PMU_INTERRUPT:
+			test_succeed = test_pmuv3_overflow_interrupt();
+			break;
 		default:
-			INFO("REALM_PAYLOAD: %s invalid cmd=%hhu", __func__, cmd);
+			realm_printf("%s() invalid cmd %u\n", __func__, cmd);
 			break;
 		}
 	}
