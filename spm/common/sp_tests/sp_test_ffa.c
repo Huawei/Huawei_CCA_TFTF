@@ -88,7 +88,7 @@ static void ffa_features_test(void)
 
 		announce_test_start(test_target.test_name);
 
-		ffa_ret = ffa_features(test_target.feature);
+		ffa_ret = ffa_features_with_input_property(test_target.feature, test_target.param);
 		expected_ret = FFA_VERSION_COMPILED
 				>= test_target.version_added ?
 				test_target.expected_ret : FFA_ERROR;

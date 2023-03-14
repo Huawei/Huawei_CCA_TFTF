@@ -367,6 +367,18 @@ struct ffa_value ffa_features(uint32_t feature)
 	return ffa_service_call(&args);
 }
 
+/* Query the higher EL if the requested FF-A feature is implemented. */
+struct ffa_value ffa_features_with_input_property(uint32_t feature, uint32_t param)
+{
+	struct ffa_value args = {
+		.fid = FFA_FEATURES,
+		.arg1 = feature,
+		.arg2 = param,
+	};
+
+	return ffa_service_call(&args);
+}
+
 /* Get information about VMs or SPs based on UUID */
 struct ffa_value ffa_partition_info_get(const struct ffa_uuid uuid)
 {

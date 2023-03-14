@@ -664,6 +664,8 @@ struct ffa_value ffa_spm_id_get(void);
 struct ffa_value ffa_msg_wait(void);
 struct ffa_value ffa_error(int32_t error_code);
 struct ffa_value ffa_features(uint32_t feature);
+struct ffa_value ffa_features_with_input_property(uint32_t feature,
+                                                  uint32_t param);
 struct ffa_value ffa_partition_info_get(const struct ffa_uuid uuid);
 struct ffa_value ffa_rx_release(void);
 struct ffa_value ffa_rxtx_map(uintptr_t send, uintptr_t recv, uint32_t pages);

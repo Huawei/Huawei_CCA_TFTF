@@ -88,7 +88,7 @@ test_result_t test_ffa_features(void)
 
 	for (i = 0U; i < test_target_size; i++) {
 		test_target = ffa_feature_test_target[i];
-		ffa_ret = ffa_features(test_target.feature);
+		ffa_ret = ffa_features_with_input_property(test_target.feature, test_target.param);
 		expected_ret = FFA_VERSION_COMPILED
 			>= test_target.version_added ?
 			test_target.expected_ret : FFA_ERROR;
