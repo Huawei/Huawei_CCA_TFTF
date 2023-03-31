@@ -509,12 +509,17 @@ all : $(1)
 
 endef
 
+ifeq (${ARCH},aarch32)
+        ARCH_TESTS_SKIP_LIST    := tftf/tests/aarch32_tests_to_skip.txt
+endif
+
 $(AUTOGEN_DIR):
 	$(Q)mkdir -p "$@"
 
-$(AUTOGEN_DIR)/tests_list.c $(AUTOGEN_DIR)/tests_list.h: $(AUTOGEN_DIR) ${TESTS_FILE} ${PLAT_TESTS_SKIP_LIST}
+$(AUTOGEN_DIR)/tests_list.c $(AUTOGEN_DIR)/tests_list.h: $(AUTOGEN_DIR) ${TESTS_FILE} ${PLAT_TESTS_SKIP_LIST} $(ARCH_TESTS_SKIP_LIST)
 	@echo "  AUTOGEN $@"
-	tools/generate_test_list/generate_test_list.pl $(AUTOGEN_DIR)/tests_list.c $(AUTOGEN_DIR)/tests_list.h  ${TESTS_FILE} $(PLAT_TESTS_SKIP_LIST)
+	tools/generate_test_list/generate_test_list.pl $(AUTOGEN_DIR)/tests_list.c \
+		$(AUTOGEN_DIR)/tests_list.h  ${TESTS_FILE} $(PLAT_TESTS_SKIP_LIST) $(ARCH_TESTS_SKIP_LIST)
 ifeq ($(SMC_FUZZING), 1)
 	$(Q)mkdir -p  ${BUILD_PLAT}/smcf
 	dtc ${SMC_FUZZ_DTS} >> ${BUILD_PLAT}/smcf/dtb

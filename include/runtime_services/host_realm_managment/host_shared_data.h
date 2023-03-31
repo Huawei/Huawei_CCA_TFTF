@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -18,16 +18,16 @@
  * payload
  */
 typedef struct host_shared_data {
-	/* Buffer used from Realm for logging*/
+	/* Buffer used from Realm for logging */
 	uint8_t log_buffer[MAX_BUF_SIZE];
 
-	/* Command set from Host and used by Realm*/
+	/* Command set from Host and used by Realm */
 	uint8_t realm_cmd;
 
-	/* array of params passed from Host to Realm*/
+	/* array of params passed from Host to Realm */
 	u_register_t host_param_val[MAX_DATA_SIZE];
 
-	/* array of output results passed from Realm to Host*/
+	/* array of output results passed from Realm to Host */
 	u_register_t realm_out_val[MAX_DATA_SIZE];
 
 	/* Lock to avoid concurrent accesses to log_buffer */
@@ -39,7 +39,11 @@ typedef struct host_shared_data {
  */
 enum realm_cmd {
 	REALM_SLEEP_CMD = 1U,
-	REALM_GET_RSI_VERSION
+	REALM_GET_RSI_VERSION,
+	REALM_PMU_CYCLE,
+	REALM_PMU_EVENT,
+	REALM_PMU_PRESERVE,
+	REALM_PMU_INTERRUPT
 };
 
 /*
@@ -49,10 +53,18 @@ enum host_param_index {
 	HOST_CMD_INDEX = 0U,
 	HOST_SLEEP_INDEX
 };
+
+enum host_call_cmd {
+        HOST_CALL_GET_SHARED_BUFF_CMD = 1U,
+        HOST_CALL_EXIT_SUCCESS_CMD,
+        HOST_CALL_EXIT_FAILED_CMD
+};
+
 /*
  * Return shared buffer pointer mapped as host_shared_data_t structure
  */
 host_shared_data_t *host_get_shared_structure(void);
+
 /*
  * Set data to be shared from Host to realm
  */

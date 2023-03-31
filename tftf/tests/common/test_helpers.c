@@ -1,8 +1,10 @@
 /*
- * Copyright (c) 2020-2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2020-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+
+#include <stdlib.h>
 
 #include <arch_helpers.h>
 #include <cactus_test_cmds.h>
@@ -269,4 +271,10 @@ void wait_for_core_to_turn_off(unsigned int mpidr)
 	while (tftf_psci_affinity_info(mpidr, MPIDR_AFFLVL0) != PSCI_STATE_OFF) {
 		continue;
 	}
+}
+
+/* Generate 64-bit random number */
+unsigned long long rand64(void)
+{
+	return ((unsigned long long)rand() << 32) | rand();
 }

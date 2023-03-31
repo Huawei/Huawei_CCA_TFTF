@@ -89,12 +89,12 @@ static test_result_t init_buffer_del_spm_rmi(void)
 
 	for (int i = 0; i < (NUM_GRANULES * PLATFORM_CORE_COUNT) ; i++) {
 		if ((rand() % 2) == 0) {
-			retrmm = rmi_granule_delegate(
+			retrmm = host_rmi_granule_delegate(
 				(u_register_t)&bufferdelegate[i * GRANULE_SIZE]);
 			bufferstate[i] = B_DELEGATED;
 			if (retrmm != 0UL) {
-				tftf_testcase_printf("Delegate operation\
-				returns fail, %lx\n", retrmm);
+				tftf_testcase_printf("Delegate operation returns 0x%lx\n",
+							retrmm);
 				return TEST_RESULT_FAIL;
 			}
 		} else {
@@ -110,7 +110,7 @@ static test_result_t reset_buffer_del_spm_rmi(void)
 
 	for (uint32_t i = 0U; i < (NUM_GRANULES * PLATFORM_CORE_COUNT) ; i++) {
 		if (bufferstate[i] == B_DELEGATED) {
-			retrmm = rmi_granule_undelegate(
+			retrmm = host_rmi_granule_undelegate(
 				(u_register_t)&bufferdelegate[i * GRANULE_SIZE]);
 			if (retrmm != 0UL) {
 				ERROR("Undelegate operation returns fail, %lx\n",
@@ -315,12 +315,12 @@ static test_result_t realm_multi_cpu_payload_del_undel(void)
 
 	for (int i = 0; i < NUM_GRANULES; i++) {
 		if (bufferstate[((cpu_node * NUM_GRANULES) + i)] == B_UNDELEGATED) {
-			retrmm = rmi_granule_delegate((u_register_t)
+			retrmm = host_rmi_granule_delegate((u_register_t)
 					&bufferdelegate[((cpu_node *
 						NUM_GRANULES) + i) * GRANULE_SIZE]);
 			bufferstate[((cpu_node * NUM_GRANULES) + i)] = B_DELEGATED;
 		} else {
-			retrmm = rmi_granule_undelegate((u_register_t)
+			retrmm = host_rmi_granule_undelegate((u_register_t)
 					&bufferdelegate[((cpu_node *
 						NUM_GRANULES) + i) * GRANULE_SIZE]);
 			bufferstate[((cpu_node * NUM_GRANULES) + i)] = B_UNDELEGATED;
@@ -360,7 +360,7 @@ test_result_t test_spm_rmm_serial_smc(void)
 	 **********************************************************************/
 	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
 
-	rmi_init_cmp_result();
+	host_rmi_init_cmp_result();
 
 	/*
 	 * Randomize the initial state of the RMI granules to realm or non-secure
@@ -420,7 +420,7 @@ test_result_t test_spm_rmm_parallel_smc(void)
 	 **********************************************************************/
 	CHECK_SPMC_TESTING_SETUP(1, 0, expected_sp_uuids);
 
-	rmi_init_cmp_result();
+	host_rmi_init_cmp_result();
 
 	/*
 	 * Randomize the initial state of the RMI granules to realm or non-secure

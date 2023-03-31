@@ -5,7 +5,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-
 #
 # Arg0: Name of the C file to generate.
 # Arg1: Name of the header file to generate.
@@ -17,6 +16,7 @@ my $TESTLIST_SRC_FILENAME = $ARGV[0];
 my $TESTLIST_HDR_FILENAME = $ARGV[1];
 my $XML_TEST_FILENAME     = $ARGV[2];
 my $SKIPPED_LIST_FILENAME = $ARGV[3];
+my $SKIPPED_LIST_FILENAME2 = $ARGV[4];
 
 use strict;
 use warnings;
@@ -46,7 +46,6 @@ if (-e $XML_TEST_FILENAME) {
 my $root = $doc->documentElement();
 my @all_testcases   = $root->findnodes("//testcase");
 my @all_testsuites  = $root->findnodes("//testsuite");
-
 
 # Check the validity of the XML file:
 # - A testsuite name must be unique.
@@ -80,52 +79,56 @@ for my $testsuite (@all_testsuites) {
 # Get the list of tests to skip.
 # For each test to skip, find it in the XML tree and remove its node.
 #
-if (($SKIPPED_LIST_FILENAME) && (open SKIPPED_FILE, "<", $SKIPPED_LIST_FILENAME)) {
-  my @lines = <SKIPPED_FILE>;
-  close $SKIPPED_LIST_FILENAME;
+sub skip_test {
+  my $file = $_[0];
+  if (($file) && (open SKIPPED_FILE, "<", $file)) {
+    my @lines = <SKIPPED_FILE>;
 
-  # Remove the newlines from the end of each line.
-  chomp @lines;
+    # Remove the newlines from the end of each line.
+    chomp @lines;
 
-  my $line_no = 0;
-  my $testsuite_name;
-  my $testcase_name;
-  my $index = 0;
+    my $line_no = 0;
+    my $testsuite_name;
+    my $testcase_name;
+    my $index = 0;
 
-  for my $line (@lines) {
-    ++$line_no;
+    for my $line (@lines) {
+      ++$line_no;
 
-    # Skip empty lines.
-    if ($line =~ /^ *$/) { next; }
-    # Skip comments.
-    if ($line =~ /^#/) { next; }
+      # Skip empty lines.
+      if ($line =~ /^ *$/) { next; }
+      # Skip comments.
+      if ($line =~ /^#/) { next; }
 
-    ($testsuite_name, $testcase_name) = split('/', $line);
+      ($testsuite_name, $testcase_name) = split('/', $line);
 
-    my @testsuites = $root->findnodes("//testsuite[\@name=\"$testsuite_name\"]");
-    if (!@testsuites) {
-      print "WARNING: $SKIPPED_LIST_FILENAME:$line_no: Test suite '$testsuite_name' doesn't exist or has already been deleted.\n";
-      next;
+      my @testsuites = $root->findnodes("//testsuite[\@name=\"$testsuite_name\"]");
+      if (!@testsuites) {
+        print "WARNING: $SKIPPED_LIST_FILENAME:$line_no: Test suite '$testsuite_name' doesn't exist or has already been deleted.\n";
+        next;
+      }
+
+      if (!defined $testcase_name) {
+        print "INFO: Testsuite '$testsuite_name' will be skipped.\n";
+        $testsuites[0]->unbindNode();
+        next;
+      }
+
+      my @testcases = $testsuites[0]->findnodes("testcase[\@name=\"$testcase_name\"]");
+      if (!@testcases) {
+        print "WARNING: $SKIPPED_LIST_FILENAME:$line_no: Test case '$testsuite_name/$testcase_name' doesn't exist or has already been deleted.\n";
+        next;
+      }
+
+      print "INFO: Testcase '$testsuite_name/$testcase_name' will be skipped.\n";
+      $testcases[0]->unbindNode();
     }
-
-    if (!defined $testcase_name) {
-      print "INFO: Testsuite '$testsuite_name' will be skipped.\n";
-      $testsuites[0]->unbindNode();
-      next;
-    }
-
-    my @testcases = $testsuites[0]->findnodes("testcase[\@name=\"$testcase_name\"]");
-    if (!@testcases) {
-      print "WARNING: $SKIPPED_LIST_FILENAME:$line_no: Test case '$testsuite_name/$testcase_name' doesn't exist or has already been deleted.\n";
-      next;
-    }
-
-    print "INFO: Testcase '$testsuite_name/$testcase_name' will be skipped.\n";
-    $testcases[0]->unbindNode();
+    close (SKIPPED_FILE);
   }
 }
 
-
+skip_test($SKIPPED_LIST_FILENAME);
+skip_test($SKIPPED_LIST_FILENAME2);
 @all_testcases = $root->findnodes("//testcase");
 
 #

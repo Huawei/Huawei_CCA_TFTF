@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -82,6 +82,25 @@
 /* ICC_IGRPEN1_EL1 bit definitions */
 #define IGRPEN1_EL1_ENABLE_SHIFT	0
 #define IGRPEN1_EL1_ENABLE_BIT		(1 << IGRPEN1_EL1_ENABLE_SHIFT)
+
+/* ICH_ICH_LR<n>_EL2 definitions */
+#define ICH_LRn_EL2_STATE_Invalid		(0UL << 62)
+#define ICH_LRn_EL2_STATE_Pending		(1UL << 62)
+#define ICH_LRn_EL2_STATE_Active		(2UL << 62)
+#define ICH_LRn_EL2_STATE_Pending_Active	(3UL << 62)
+#define ICH_LRn_EL2_Group_0			(0UL << 60)
+#define ICH_LRn_EL2_Group_1			(1UL << 60)
+#define ICH_LRn_EL2_Priority_SHIFT		48
+#define ICH_LRn_EL2_Priority_MASK		0xFF
+#define ICH_LRn_EL2_vINTID_SHIFT		0
+#define ICH_LRn_EL2_vINTID_MASK			0xFFFF
+
+/* ICV_CTLR_EL1 definitions */
+#define ICV_CTLR_EL1_PRIbits_SHIFT		8
+#define ICV_CTLR_EL1_PRIbits_MASK		7
+
+/* ICV_IGRPEN1_EL1 definition */
+#define ICV_IGRPEN1_EL1_Enable			1UL
 
 /* The highest affinity 0 that can be a SGI target*/
 #define SGI_TARGET_MAX_AFF0		16

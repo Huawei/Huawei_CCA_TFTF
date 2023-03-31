@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2016-2023, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -440,10 +440,11 @@
 
 /* PMCCFILTR definitions */
 #define PMCCFILTR_EL0_P_BIT		(U(1) << 31)
+#define PMCCFILTR_EL0_U_BIT		(U(1) << 30)
 #define PMCCFILTR_EL0_NSK_BIT		(U(1) << 29)
+#define PMCCFILTR_EL0_NSU_BIT		(U(1) << 28)
 #define PMCCFILTR_EL0_NSH_BIT		(U(1) << 27)
 #define PMCCFILTR_EL0_M_BIT		(U(1) << 26)
-#define PMCCFILTR_EL0_MT_BIT		(U(1) << 25)
 #define PMCCFILTR_EL0_SH_BIT		(U(1) << 24)
 
 /* PMU event counter ID definitions */

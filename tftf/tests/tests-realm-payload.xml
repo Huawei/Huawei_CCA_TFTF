@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  Copyright (c) 2021, Arm Limited. All rights reserved.
+  Copyright (c) 2021-2023, Arm Limited. All rights reserved.
 
   SPDX-License-Identifier: BSD-3-Clause
 -->
@@ -9,16 +9,24 @@
 <testsuites>
   <testsuite name="Realm payload at EL1" description="Test Realm EL1 framework capabilities" >
 	  <testcase name="Realm EL1 creation and execution test"
-	  function="test_realm_create_enter" />
+	  function="host_test_realm_create_enter" />
 	  <testcase name="Realm payload boot"
-	  function="realm_version_single_cpu" />
+	  function="host_realm_version_single_cpu" />
 	  <testcase name="Realm payload multi CPU request"
-	  function="realm_version_multi_cpu" />
+	  function="host_realm_version_multi_cpu" />
 	  <testcase name="Realm payload Delegate and Undelegate"
-	  function="realm_delegate_undelegate" />
+	  function="host_realm_delegate_undelegate" />
 	  <testcase name="Multi CPU Realm payload Delegate and Undelegate"
-	  function="realm_delundel_multi_cpu" />
+	  function="host_realm_delundel_multi_cpu" />
 	  <testcase name="Testing delegation fails"
-	  function="realm_fail_del" />
+	  function="host_realm_fail_del" />
+	  <testcase name="PMUv3 cycle counter functional in Realm"
+	  function="host_realm_pmuv3_cycle_works" />
+	  <testcase name="PMUv3 event counter functional in Realm"
+	  function="host_realm_pmuv3_event_works" />
+	  <testcase name="PMUv3 RSI SMC counter preservation"
+	  function="host_realm_pmuv3_rmm_preserves" />
+	  <testcase name="PMUv3 overflow interrupt"
+	  function="host_realm_pmuv3_overflow_interrupt" />
   </testsuite>
 </testsuites>

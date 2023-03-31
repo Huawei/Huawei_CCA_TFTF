@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  *
@@ -35,13 +35,13 @@
 
 /*
  * Default values defined in platform.mk, and can be provided as build arguments
- * TFTF_MAX_IMAGE_SIZE: 1mb
+ * TFTF_MAX_IMAGE_SIZE: 1MB
  */
 
 #ifdef TFTF_MAX_IMAGE_SIZE
-/* 1MB for shared buffer between Realm and Host*/
+/* 1MB for shared buffer between Realm and Host */
  #define NS_REALM_SHARED_MEM_SIZE	U(0x100000)
-/* 3MB of memory used as a pool for realm's objects creation*/
+/* 3MB of memory used as a pool for realm's objects creation */
  #define PAGE_POOL_MAX_SIZE		U(0x300000)
 /* Base address of each section */
  #define REALM_IMAGE_BASE		(TFTF_BASE + TFTF_MAX_IMAGE_SIZE)

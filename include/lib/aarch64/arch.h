@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2022, Arm Limited and Contributors. All rights reserved.
+ * Copyright (c) 2013-2023, Arm Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -85,15 +85,21 @@
 #define ICC_CTLR_EL3		S3_6_C12_C12_4
 #define ICC_PMR_EL1		S3_0_C4_C6_0
 #define ICC_RPR_EL1		S3_0_C12_C11_3
-#define ICC_IGRPEN1_EL3		S3_6_c12_c12_7
-#define ICC_IGRPEN0_EL1		S3_0_c12_c12_6
-#define ICC_HPPIR0_EL1		S3_0_c12_c8_2
-#define ICC_HPPIR1_EL1		S3_0_c12_c12_2
-#define ICC_IAR0_EL1		S3_0_c12_c8_0
-#define ICC_IAR1_EL1		S3_0_c12_c12_0
-#define ICC_EOIR0_EL1		S3_0_c12_c8_1
-#define ICC_EOIR1_EL1		S3_0_c12_c12_1
-#define ICC_SGI0R_EL1		S3_0_c12_c11_7
+#define ICC_IGRPEN1_EL3		S3_6_C12_C12_7
+#define ICC_IGRPEN0_EL1		S3_0_C12_C12_6
+#define ICC_HPPIR0_EL1		S3_0_C12_C8_2
+#define ICC_HPPIR1_EL1		S3_0_C12_C12_2
+#define ICC_IAR0_EL1		S3_0_C12_C8_0
+#define ICC_IAR1_EL1		S3_0_C12_C12_0
+#define ICC_EOIR0_EL1		S3_0_C12_C8_1
+#define ICC_EOIR1_EL1		S3_0_C12_C12_1
+#define ICC_SGI0R_EL1		S3_0_C12_C11_7
+
+#define ICV_CTRL_EL1		S3_0_C12_C12_4
+#define ICV_IAR1_EL1		S3_0_C12_C12_0
+#define ICV_IGRPEN1_EL1		S3_0_C12_C12_7
+#define ICV_EOIR1_EL1		S3_0_C12_C12_1
+#define ICV_PMR_EL1		S3_0_C4_C6_0
 
 /*******************************************************************************
  * Generic timer memory mapped registers & offsets
@@ -808,20 +814,30 @@
 
 /* PMEVTYPER<n>_EL0 definitions */
 #define PMEVTYPER_EL0_P_BIT		(U(1) << 31)
+#define PMEVTYPER_EL0_U_BIT		(U(1) << 30)
 #define PMEVTYPER_EL0_NSK_BIT		(U(1) << 29)
+#define PMEVTYPER_EL0_NSU_BIT		(U(1) << 28)
 #define PMEVTYPER_EL0_NSH_BIT		(U(1) << 27)
 #define PMEVTYPER_EL0_M_BIT		(U(1) << 26)
 #define PMEVTYPER_EL0_MT_BIT		(U(1) << 25)
 #define PMEVTYPER_EL0_SH_BIT		(U(1) << 24)
+#define PMEVTYPER_EL0_T_BIT		(U(1) << 23)
+#define PMEVTYPER_EL0_RLK_BIT		(U(1) << 22)
+#define PMEVTYPER_EL0_RLU_BIT		(U(1) << 21)
+#define PMEVTYPER_EL0_RLH_BIT		(U(1) << 20)
 #define PMEVTYPER_EL0_EVTCOUNT_BITS	U(0x0000FFFF)
 
 /* PMCCFILTR_EL0 definitions */
 #define PMCCFILTR_EL0_P_BIT		(U(1) << 31)
+#define PMCCFILTR_EL0_U_BIT		(U(1) << 30)
 #define PMCCFILTR_EL0_NSK_BIT		(U(1) << 29)
 #define PMCCFILTR_EL0_NSH_BIT		(U(1) << 27)
 #define PMCCFILTR_EL0_M_BIT		(U(1) << 26)
-#define PMCCFILTR_EL0_MT_BIT		(U(1) << 25)
 #define PMCCFILTR_EL0_SH_BIT		(U(1) << 24)
+#define PMCCFILTR_EL0_T_BIT		(U(1) << 23)
+#define PMCCFILTR_EL0_RLK_BIT		(U(1) << 22)
+#define PMCCFILTR_EL0_RLU_BIT		(U(1) << 21)
+#define PMCCFILTR_EL0_RLH_BIT		(U(1) << 20)
 
 /* PMSELR_EL0 definitions */
 #define PMSELR_EL0_SEL_SHIFT		U(0)

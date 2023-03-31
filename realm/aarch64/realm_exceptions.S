@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,7 +14,7 @@
  */
 .macro unhandled_exception name
 	vector_entry \name
-	b crash_dump
+	b	crash_dump
 	end_vector_entry \name
 .endm
 
@@ -106,11 +106,11 @@ func sync_exception_vector_entry
 	mov	x19, sp
 	bl	tftf_sync_exception_handler
 	cbnz	x0, 0f
-	mov x0, x19
+	mov	x0, x19
 	/* Save original stack pointer value on the stack */
 	add	x1, x0, #0x100
 	str	x1, [x0, #0xf8]
-	b print_exception
+	b	print_exception
 0:	restore_gp_regs
 	add	sp, sp, #0x100
 	eret
