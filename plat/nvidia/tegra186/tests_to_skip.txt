@@ -15,6 +15,9 @@ PSCI CPU Suspend/CPU suspend to standby at level 1
 PSCI CPU Suspend/CPU suspend to standby at level 2
 PSCI System Suspend Validation/Suspend system with cores in suspend
 
+# Tegra186 platforms do not support OS-initiated mode
+PSCI CPU Suspend in OSI mode
+
 # Tegra186 platforms are facing problems with system suspend
 PSCI System Suspend Validation
 

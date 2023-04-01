@@ -208,6 +208,12 @@ extern const psci_function_t psci_functions[PSCI_NUM_CALLS];
 #define PSCI_E_INVALID_ADDRESS	-9
 
 /*******************************************************************************
+ * PSCI suspend mode related constants.
+ ******************************************************************************/
+#define PSCI_PLAT_COORD		0x0
+#define PSCI_OS_INIT		0x1
+
+/*******************************************************************************
  * PSCI affinity state related constants.
  ******************************************************************************/
 #define PSCI_STATE_ON		0x0

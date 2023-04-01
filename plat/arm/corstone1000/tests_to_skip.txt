@@ -12,4 +12,5 @@ PSCI SYSTEM SUSPEND stress tests
 Timer framework Validation/Verify the timer interrupt generation
 CPU Hotplug/CPU hotplug
 PSCI CPU Suspend
+PSCI CPU Suspend in OSI mode
 PSCI STAT/for valid composite state CPU suspend

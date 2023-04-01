@@ -15,6 +15,9 @@ PSCI CPU Suspend/CPU suspend to standby at level 2
 PSCI CPU Suspend/CPU suspend to powerdown at level 1
 PSCI CPU Suspend/CPU suspend to powerdown at level 2
 
+# Tegra186 platforms do not support OS-initiated mode
+PSCI CPU Suspend in OSI mode
+
 # Tegra210 platforms enter system suspend only from the boot core
 PSCI System Suspend Validation
 

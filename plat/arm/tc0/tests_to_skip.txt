@@ -7,6 +7,9 @@
 # Disable SMMUv3 tests
 SMMUv3 tests
 
+# OS-initiated mode is not supported
+PSCI CPU Suspend in OSI mode
+
 # PSCI is enabled but not tested
 PSCI STAT/Stats test cases after system suspend
 PSCI System Suspend Validation

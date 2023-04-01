@@ -81,6 +81,17 @@ int32_t tftf_psci_cpu_off(void)
 	return ret_vals.ret0;
 }
 
+int32_t tftf_psci_set_suspend_mode(uint32_t mode)
+{
+	smc_args args = {
+		SMC_PSCI_SET_SUSPEND_MODE,
+		mode
+	};
+	smc_ret_values ret_vals;
+
+	ret_vals = tftf_smc(&args);
+	return ret_vals.ret0;
+}
 
 u_register_t tftf_psci_stat_residency(u_register_t target_cpu,
 		uint32_t power_state)
@@ -185,6 +196,8 @@ int tftf_psci_make_composite_state_id(uint32_t affinity_level,
 			ret = PSCI_E_INVALID_PARAMS;
 		}
 	}
+	*state_id |= psci_make_local_state_id(PLAT_MAX_PWR_LEVEL + 1,
+					      affinity_level);
 
 	return ret;
 }
