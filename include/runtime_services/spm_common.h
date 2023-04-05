@@ -55,6 +55,7 @@ struct ffa_features_test {
 	const char *test_name;
 	unsigned int feature;
 	unsigned int expected_ret;
+	unsigned int param;
 	unsigned int version_added;
 };
 
