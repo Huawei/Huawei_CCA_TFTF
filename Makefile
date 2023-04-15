@@ -118,6 +118,9 @@ SECURE_PARTITIONS	:=
 # Only platform fvp supports cactus_mm
 ifeq (${ARCH}-${PLAT},aarch64-fvp)
 include spm/cactus_mm/cactus_mm.mk
+endif
+
+ifeq (${ARCH}-${PLAT},$(filter ${ARCH}-${PLAT},aarch64-fvp aarch64-qemu))
 include realm/realm.mk
 endif
 
@@ -376,10 +379,12 @@ ifneq (${ARCH}-${PLAT},aarch64-fvp)
 cactus_mm:
 	@echo "ERROR: $@ is supported only on AArch64 FVP."
 	@exit 1
+endif
 
+ifneq (${ARCH}-${PLAT},$(filter ${ARCH}-${PLAT},aarch64-fvp aarch64-qemu))
 .PHONY: realm
 realm:
-	@echo "ERROR: $@ is supported only on AArch64 FVP."
+	@echo "ERROR: $@ is supported only on AArch64 FVP and QEMU."
 	@exit 1
 
 .PHONY: pack_realm
@@ -539,10 +544,13 @@ ifeq (${ARCH}-${PLAT},aarch64-fvp)
   $(eval $(call MAKE_IMG,cactus_mm))
   $(eval $(call MAKE_IMG,cactus))
   $(eval $(call MAKE_IMG,ivy))
+endif
+
+ifeq (${ARCH}-${PLAT},$(filter ${ARCH}-${PLAT},aarch64-fvp aarch64-qemu))
   $(eval $(call MAKE_IMG,realm))
 endif
 
-ifeq (${ARCH}-${PLAT},aarch64-fvp)
+ifeq (${ARCH}-${PLAT},$(filter ${ARCH}-${PLAT},aarch64-fvp aarch64-qemu))
 .PHONY : pack_realm
 pack_realm: realm tftf
 	@echo "  PACK REALM PAYLOAD"
